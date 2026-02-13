@@ -165,7 +165,6 @@ def check_dependencies():
         'sklearn': 'scikit-learn',
         'matplotlib': 'matplotlib',
         'seaborn': 'seaborn',
-        'tensorflow': 'tensorflow',
         'tqdm': 'tqdm',
         'joblib': 'joblib'
     }
