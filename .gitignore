@@ -1,0 +1,37 @@
+# ===== Donnees =====
+# Fichiers audio bruts (trop volumineux pour GitHub)
+data/raw/
+# Features extraites (generees automatiquement)
+data/processed/
+
+# ===== Environnement virtuel =====
+.venv/
+venv/
+env/
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# ===== Modeles entraines (fichiers volumineux) =====
+models/*.pkl
+models/*.joblib
+models/*.h5
+
+# ===== IDE =====
+.vscode/
+.idea/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+nul
+
+# ===== Jupyter Notebooks =====
+.ipynb_checkpoints/
+
+# ===== Claude =====
+.claude/
