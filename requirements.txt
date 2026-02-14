@@ -21,6 +21,9 @@ scikit-learn>=1.0.0
 # --- Deep Learning (optionnel) ---
 # tensorflow>=2.8.0  # Non supporté sur Python 3.14, décommenter si Python <= 3.12
 
+# --- Web App ---
+flask>=2.0.0
+
 # --- Utilitaires ---
 tqdm>=4.62.0
 joblib>=1.1.0

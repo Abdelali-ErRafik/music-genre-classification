@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Genre Classifier</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 40px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 550px;
+            width: 100%;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 16px;
+            padding: 50px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #7c4dff;
+            background: rgba(124, 77, 255, 0.1);
+        }
+
+        .upload-area .icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .upload-area p {
+            color: #bbb;
+            font-size: 0.95rem;
+        }
+
+        .upload-area .filename {
+            color: #7c4dff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 8px;
+        }
+
+        .formats {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+
+        input[type="file"] { display: none; }
+
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #7c4dff, #448aff);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,77,255,0.4); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: #7c4dff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Result */
+        .result {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .predicted-genre {
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #7c4dff, #448aff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .confidence {
+            color: #aaa;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+
+        /* Probability Bars */
+        .prob-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .prob-label {
+            width: 90px;
+            font-size: 0.85rem;
+            text-align: right;
+            color: #ccc;
+        }
+
+        .prob-bar-bg {
+            flex: 1;
+            height: 24px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .prob-bar {
+            height: 100%;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #7c4dff, #448aff);
+            transition: width 0.6s ease;
+            min-width: 2px;
+        }
+
+        .prob-bar.top { background: linear-gradient(90deg, #7c4dff, #e040fb); }
+
+        .prob-value {
+            width: 50px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        /* Error */
+        .error {
+            display: none;
+            background: rgba(255,82,82,0.15);
+            border: 1px solid rgba(255,82,82,0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            text-align: center;
+            color: #ff5252;
+        }
+
+        /* Reset */
+        .reset-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 30px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #ccc;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+    </style>
+</head>
+<body>
+
+    <h1>Music Genre Classifier</h1>
+    <p class="subtitle">Uploadez un fichier audio pour identifier son genre musical</p>
+
+    <div class="container">
+        <!-- Upload -->
+        <div id="uploadArea" class="upload-area">
+            <div class="icon">&#127925;</div>
+            <p>Glissez votre fichier ici ou <strong>cliquez pour parcourir</strong></p>
+            <div class="filename" id="fileName"></div>
+            <div class="formats">Formats: WAV, MP3, OGG, FLAC, M4A</div>
+        </div>
+        <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac,.m4a">
+
+        <button class="btn" id="predictBtn" disabled>Classifier ce morceau</button>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyse audio en cours...</p>
+        </div>
+
+        <!-- Error -->
+        <div class="error" id="error"></div>
+
+        <!-- Result -->
+        <div class="result" id="result">
+            <div class="result-header">
+                <div class="predicted-genre" id="predictedGenre"></div>
+                <div class="confidence" id="confidenceText"></div>
+            </div>
+            <div id="probBars"></div>
+            <button class="reset-btn" id="resetBtn">Essayer un autre fichier</button>
+        </div>
+    </div>
+
+<script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const predictBtn = document.getElementById('predictBtn');
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const errorDiv = document.getElementById('error');
+    let selectedFile = null;
+
+    // Click to upload
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    // Drag & drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    // File selected
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+        selectedFile = file;
+        document.getElementById('fileName').textContent = file.name;
+        predictBtn.disabled = false;
+        result.style.display = 'none';
+        errorDiv.style.display = 'none';
+    }
+
+    // Predict
+    predictBtn.addEventListener('click', async () => {
+        if (!selectedFile) return;
+
+        predictBtn.disabled = true;
+        loading.style.display = 'block';
+        result.style.display = 'none';
+        errorDiv.style.display = 'none';
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        try {
+            const response = await fetch('/predict', { method: 'POST', body: formData });
+            const data = await response.json();
+
+            loading.style.display = 'none';
+
+            if (data.error) {
+                errorDiv.textContent = data.error;
+                errorDiv.style.display = 'block';
+                predictBtn.disabled = false;
+                return;
+            }
+
+            // Show result
+            document.getElementById('predictedGenre').textContent = data.genre;
+            document.getElementById('confidenceText').textContent = `Confiance: ${data.confidence}%`;
+
+            const probBars = document.getElementById('probBars');
+            probBars.innerHTML = '';
+            data.probabilities.forEach((item, i) => {
+                probBars.innerHTML += `
+                    <div class="prob-item">
+                        <span class="prob-label">${item.genre}</span>
+                        <div class="prob-bar-bg">
+                            <div class="prob-bar ${i === 0 ? 'top' : ''}" style="width: ${item.probability}%"></div>
+                        </div>
+                        <span class="prob-value">${item.probability}%</span>
+                    </div>`;
+            });
+
+            result.style.display = 'block';
+        } catch (err) {
+            loading.style.display = 'none';
+            errorDiv.textContent = 'Erreur de connexion au serveur';
+            errorDiv.style.display = 'block';
+        }
+
+        predictBtn.disabled = false;
+    });
+
+    // Reset
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        selectedFile = null;
+        fileInput.value = '';
+        document.getElementById('fileName').textContent = '';
+        predictBtn.disabled = true;
+        result.style.display = 'none';
+        errorDiv.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>
