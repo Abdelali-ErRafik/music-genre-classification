@@ -15,34 +15,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-            text-align: center;
-        }
+        h1 { font-size: 2.4rem; margin-bottom: 8px; text-align: center; }
+        .subtitle { color: #aaa; margin-bottom: 40px; font-size: 1rem; text-align: center; }
 
-        .subtitle {
-            color: #aaa;
-            margin-bottom: 40px;
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        .container {
+        /* ===== UPLOAD CONTAINER ===== */
+        .upload-container {
             background: rgba(255,255,255,0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
             padding: 40px;
-            max-width: 550px;
+            max-width: 580px;
             width: 100%;
         }
 
-        /* Upload Area */
         .upload-area {
             border: 2px dashed rgba(255,255,255,0.3);
             border-radius: 16px;
@@ -58,32 +47,12 @@
             background: rgba(124, 77, 255, 0.1);
         }
 
-        .upload-area .icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
-        }
-
-        .upload-area p {
-            color: #bbb;
-            font-size: 0.95rem;
-        }
-
-        .upload-area .filename {
-            color: #7c4dff;
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-top: 8px;
-        }
-
-        .formats {
-            color: #888;
-            font-size: 0.8rem;
-            margin-top: 6px;
-        }
-
+        .upload-area .icon { font-size: 3rem; margin-bottom: 12px; }
+        .upload-area p { color: #bbb; font-size: 0.95rem; }
+        .upload-area .filename { color: #7c4dff; font-weight: 600; font-size: 1.1rem; margin-top: 8px; }
+        .formats { color: #888; font-size: 0.8rem; margin-top: 6px; }
         input[type="file"] { display: none; }
 
-        /* Button */
         .btn {
             width: 100%;
             padding: 16px;
@@ -100,93 +69,7 @@
         .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,77,255,0.4); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* Loading */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: #7c4dff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Result */
-        .result {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .result-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .predicted-genre {
-            font-size: 2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #7c4dff, #448aff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .confidence {
-            color: #aaa;
-            font-size: 1rem;
-            margin-top: 4px;
-        }
-
-        /* Probability Bars */
-        .prob-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 10px;
-        }
-
-        .prob-label {
-            width: 90px;
-            font-size: 0.85rem;
-            text-align: right;
-            color: #ccc;
-        }
-
-        .prob-bar-bg {
-            flex: 1;
-            height: 24px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .prob-bar {
-            height: 100%;
-            border-radius: 12px;
-            background: linear-gradient(90deg, #7c4dff, #448aff);
-            transition: width 0.6s ease;
-            min-width: 2px;
-        }
-
-        .prob-bar.top { background: linear-gradient(90deg, #7c4dff, #e040fb); }
-
-        .prob-value {
-            width: 50px;
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-
-        /* Error */
-        .error {
+        .error-msg {
             display: none;
             background: rgba(255,82,82,0.15);
             border: 1px solid rgba(255,82,82,0.3);
@@ -197,97 +80,472 @@
             color: #ff5252;
         }
 
-        /* Reset */
-        .reset-btn {
-            display: block;
-            margin: 20px auto 0;
-            padding: 10px 30px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            color: #ccc;
+        /* ===== PIPELINE ===== */
+        .pipeline {
+            display: none;
+            max-width: 850px;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .pipeline.active { display: block; }
+
+        /* Step */
+        .step {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            margin-bottom: 24px;
+        }
+
+        .step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 24px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(124,77,255,0.15);
+            border: 2px solid #7c4dff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
             font-size: 0.9rem;
+            color: #7c4dff;
+            flex-shrink: 0;
+        }
+
+        .step.visible .step-number {
+            background: #7c4dff;
+            color: #fff;
+        }
+
+        .step-title { font-size: 1.05rem; font-weight: 600; }
+        .step-desc { font-size: 0.82rem; color: #999; margin-top: 2px; }
+
+        .step-body { padding: 20px 24px; }
+
+        /* Connector line between steps */
+        .connector {
+            width: 2px;
+            height: 24px;
+            background: rgba(124,77,255,0.2);
+            margin: 0 auto;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .connector.visible {
+            opacity: 1;
+            background: linear-gradient(to bottom, #7c4dff, rgba(124,77,255,0.2));
+        }
+
+        /* Step specific styles */
+        .audio-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: #7c4dff; }
+        .stat-label { font-size: 0.75rem; color: #888; margin-top: 4px; }
+
+        .viz-image {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .viz-label {
+            font-size: 0.82rem;
+            color: #999;
+            margin-top: 16px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        /* Features table */
+        .feature-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .feat-group {
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .feat-group .count { font-size: 1.5rem; font-weight: 700; color: #7c4dff; }
+        .feat-group .name { font-size: 0.78rem; color: #999; margin-top: 2px; }
+
+        .feature-detail-toggle {
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            color: #aaa;
+            font-size: 0.82rem;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .reset-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .feature-detail-toggle:hover { background: rgba(124,77,255,0.15); color: #ccc; }
+
+        .feature-detail {
+            display: none;
+            margin-top: 14px;
+            max-height: 250px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .feature-detail.open { display: block; }
+
+        .feat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.78rem;
+        }
+
+        .feat-row .fname { color: #aaa; font-family: 'Cascadia Code', 'Consolas', monospace; }
+        .feat-row .fval { color: #7c4dff; font-weight: 600; }
+
+        /* Normalization comparison */
+        .norm-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .norm-table th {
+            background: rgba(124,77,255,0.15);
+            padding: 10px 14px;
+            text-align: left;
+            color: #c0b0ff;
+            font-weight: 600;
+        }
+
+        .norm-table td {
+            padding: 8px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.78rem;
+        }
+
+        .norm-table td:first-child { color: #aaa; }
+        .norm-table .raw { color: #ff9800; }
+        .norm-table .scaled { color: #4caf50; }
+
+        .norm-arrow { color: #888; text-align: center; }
+
+        .norm-note {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        /* Result */
+        .result-box {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .predicted-genre {
+            font-size: 2.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #7c4dff, #e040fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .confidence-text { color: #aaa; font-size: 1rem; margin-top: 4px; }
+
+        .prob-item { display: flex; align-items: center; margin-bottom: 8px; gap: 10px; }
+        .prob-label { width: 90px; font-size: 0.82rem; text-align: right; color: #ccc; }
+
+        .prob-bar-bg {
+            flex: 1;
+            height: 26px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 13px;
+            overflow: hidden;
+        }
+
+        .prob-bar {
+            height: 100%;
+            border-radius: 13px;
+            background: linear-gradient(90deg, #7c4dff, #448aff);
+            transition: width 0.8s ease;
+            min-width: 2px;
+        }
+
+        .prob-bar.top { background: linear-gradient(90deg, #7c4dff, #e040fb); }
+        .prob-value { width: 50px; font-size: 0.82rem; color: #aaa; }
+
+        /* Reset */
+        .reset-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 40px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: #ccc;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+        /* Loading overlay on button */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+        .footer {
+            margin-top: 50px;
+            padding: 20px;
+            color: #444;
+            font-size: 0.78rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <h1>Music Genre Classifier</h1>
-    <p class="subtitle">Uploadez un fichier audio pour identifier son genre musical</p>
+    <p class="subtitle">Uploadez un fichier audio et observez le pipeline de classification en action</p>
 
-    <div class="container">
-        <!-- Upload -->
+    <!-- ===== UPLOAD ===== -->
+    <div class="upload-container" id="uploadContainer">
         <div id="uploadArea" class="upload-area">
             <div class="icon">&#127925;</div>
-            <p>Glissez votre fichier ici ou <strong>cliquez pour parcourir</strong></p>
+            <p>Glissez votre fichier audio ici ou <strong>cliquez pour parcourir</strong></p>
             <div class="filename" id="fileName"></div>
             <div class="formats">Formats: WAV, MP3, OGG, FLAC, M4A</div>
         </div>
         <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac,.m4a">
-
-        <button class="btn" id="predictBtn" disabled>Classifier ce morceau</button>
-
-        <!-- Loading -->
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Analyse audio en cours...</p>
-        </div>
-
-        <!-- Error -->
-        <div class="error" id="error"></div>
-
-        <!-- Result -->
-        <div class="result" id="result">
-            <div class="result-header">
-                <div class="predicted-genre" id="predictedGenre"></div>
-                <div class="confidence" id="confidenceText"></div>
-            </div>
-            <div id="probBars"></div>
-            <button class="reset-btn" id="resetBtn">Essayer un autre fichier</button>
-        </div>
+        <button class="btn" id="predictBtn" disabled>Lancer la classification</button>
+        <div class="error-msg" id="errorMsg"></div>
     </div>
+
+    <!-- ===== PIPELINE VISUALIZATION ===== -->
+    <div class="pipeline" id="pipeline">
+
+        <!-- STEP 1: Audio Loading -->
+        <div class="step" id="step1">
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div>
+                        <div class="step-title">Chargement du signal audio</div>
+                        <div class="step-desc">librosa.load() &mdash; Conversion en signal numerique</div>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <div class="audio-stats" id="audioStats"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="connector" id="conn1"></div>
+
+        <!-- STEP 2: Visualization -->
+        <div class="step" id="step2">
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div>
+                        <div class="step-title">Analyse du signal</div>
+                        <div class="step-desc">Waveform + Mel-Spectrogramme &mdash; Visualisation temps-frequence</div>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <div class="viz-label">Waveform (Amplitude vs Temps)</div>
+                    <img class="viz-image" id="waveformImg" src="" alt="Waveform">
+                    <div class="viz-label">Mel-Spectrogramme (Frequence vs Temps)</div>
+                    <img class="viz-image" id="spectrogramImg" src="" alt="Spectrogram">
+                </div>
+            </div>
+        </div>
+
+        <div class="connector" id="conn2"></div>
+
+        <!-- STEP 3: Feature Extraction -->
+        <div class="step" id="step3">
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div>
+                        <div class="step-title">Extraction des caracteristiques</div>
+                        <div class="step-desc">FeatureExtractor &mdash; <span id="totalFeatures">102</span> features extraites avec librosa</div>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <div class="feature-groups" id="featureGroups"></div>
+                    <button class="feature-detail-toggle" id="toggleFeatures">Voir toutes les features</button>
+                    <div class="feature-detail" id="featureDetail"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="connector" id="conn3"></div>
+
+        <!-- STEP 4: Normalization -->
+        <div class="step" id="step4">
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div>
+                        <div class="step-title">Normalisation (StandardScaler)</div>
+                        <div class="step-desc">X = (X - moyenne) / ecart_type &mdash; Meme echelle que l'entrainement</div>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <table class="norm-table" id="normTable">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Valeur brute</th>
+                                <th></th>
+                                <th>Valeur normalisee</th>
+                            </tr>
+                        </thead>
+                        <tbody id="normBody"></tbody>
+                    </table>
+                    <div class="norm-note">* Normalisation appliquee sur les <span id="normTotal">102</span> features avec le meme scaler utilise pendant l'entrainement</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="connector" id="conn4"></div>
+
+        <!-- STEP 5: Prediction -->
+        <div class="step" id="step5">
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <div>
+                        <div class="step-title">Prediction SVM</div>
+                        <div class="step-desc">model.predict() + predict_proba() &mdash; Classification par le Support Vector Machine</div>
+                    </div>
+                </div>
+                <div class="step-body">
+                    <div class="result-box">
+                        <div class="predicted-genre" id="predictedGenre"></div>
+                        <div class="confidence-text" id="confidenceText"></div>
+                    </div>
+                    <div id="probBars"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">Essayer un autre fichier</button>
+    </div>
+
+    <div class="footer">Music Genre Classification &mdash; Machine Learning Pipeline</div>
 
 <script>
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
     const predictBtn = document.getElementById('predictBtn');
-    const loading = document.getElementById('loading');
-    const result = document.getElementById('result');
-    const errorDiv = document.getElementById('error');
+    const errorMsg = document.getElementById('errorMsg');
+    const pipeline = document.getElementById('pipeline');
     let selectedFile = null;
 
-    // Click to upload
+    // Upload handlers
     uploadArea.addEventListener('click', () => fileInput.click());
 
-    // Drag & drop
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
     uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
-        if (e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
-        }
+        if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
     });
 
-    // File selected
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) handleFile(e.target.files[0]);
-    });
+    fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
 
     function handleFile(file) {
         selectedFile = file;
         document.getElementById('fileName').textContent = file.name;
         predictBtn.disabled = false;
-        result.style.display = 'none';
-        errorDiv.style.display = 'none';
+        errorMsg.style.display = 'none';
+        pipeline.classList.remove('active');
+        resetSteps();
+    }
+
+    function resetSteps() {
+        for (let i = 1; i <= 5; i++) {
+            document.getElementById('step' + i).classList.remove('visible');
+        }
+        for (let i = 1; i <= 4; i++) {
+            document.getElementById('conn' + i).classList.remove('visible');
+        }
+    }
+
+    function showStep(id, delay) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                document.getElementById(id).classList.add('visible');
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                resolve();
+            }, delay);
+        });
     }
 
     // Predict
@@ -295,9 +553,11 @@
         if (!selectedFile) return;
 
         predictBtn.disabled = true;
-        loading.style.display = 'block';
-        result.style.display = 'none';
-        errorDiv.style.display = 'none';
+        predictBtn.classList.add('btn-loading');
+        predictBtn.textContent = 'Analyse en cours...';
+        errorMsg.style.display = 'none';
+        pipeline.classList.remove('active');
+        resetSteps();
 
         const formData = new FormData();
         formData.append('file', selectedFile);
@@ -306,40 +566,131 @@
             const response = await fetch('/predict', { method: 'POST', body: formData });
             const data = await response.json();
 
-            loading.style.display = 'none';
+            predictBtn.classList.remove('btn-loading');
+            predictBtn.textContent = 'Lancer la classification';
 
             if (data.error) {
-                errorDiv.textContent = data.error;
-                errorDiv.style.display = 'block';
+                errorMsg.textContent = data.error;
+                errorMsg.style.display = 'block';
                 predictBtn.disabled = false;
                 return;
             }
 
-            // Show result
-            document.getElementById('predictedGenre').textContent = data.genre;
-            document.getElementById('confidenceText').textContent = `Confiance: ${data.confidence}%`;
+            // Show pipeline
+            pipeline.classList.add('active');
+            await animatePipeline(data);
 
-            const probBars = document.getElementById('probBars');
-            probBars.innerHTML = '';
-            data.probabilities.forEach((item, i) => {
-                probBars.innerHTML += `
-                    <div class="prob-item">
-                        <span class="prob-label">${item.genre}</span>
-                        <div class="prob-bar-bg">
-                            <div class="prob-bar ${i === 0 ? 'top' : ''}" style="width: ${item.probability}%"></div>
-                        </div>
-                        <span class="prob-value">${item.probability}%</span>
-                    </div>`;
-            });
-
-            result.style.display = 'block';
         } catch (err) {
-            loading.style.display = 'none';
-            errorDiv.textContent = 'Erreur de connexion au serveur';
-            errorDiv.style.display = 'block';
+            predictBtn.classList.remove('btn-loading');
+            predictBtn.textContent = 'Lancer la classification';
+            errorMsg.textContent = 'Erreur de connexion au serveur';
+            errorMsg.style.display = 'block';
         }
 
         predictBtn.disabled = false;
+    });
+
+    async function animatePipeline(data) {
+        const p = data.pipeline;
+
+        // === STEP 1: Audio info ===
+        document.getElementById('audioStats').innerHTML = `
+            <div class="stat-box">
+                <div class="stat-value">${p.step1_audio.duration}s</div>
+                <div class="stat-label">Duree</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">${(p.step1_audio.sample_rate / 1000).toFixed(1)}k</div>
+                <div class="stat-label">Sample Rate (Hz)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">${(p.step1_audio.total_samples / 1000).toFixed(0)}k</div>
+                <div class="stat-label">Echantillons</div>
+            </div>`;
+
+        await showStep('step1', 300);
+        await showStep('conn1', 500);
+
+        // === STEP 2: Visualizations ===
+        document.getElementById('waveformImg').src = 'data:image/png;base64,' + p.step2_waveform;
+        document.getElementById('spectrogramImg').src = 'data:image/png;base64,' + p.step2_spectrogram;
+
+        await showStep('step2', 600);
+        await showStep('conn2', 500);
+
+        // === STEP 3: Features ===
+        document.getElementById('totalFeatures').textContent = p.step3_total;
+
+        let groupsHTML = '';
+        for (const [group, count] of Object.entries(p.step3_counts)) {
+            groupsHTML += `<div class="feat-group"><div class="count">${count}</div><div class="name">${group}</div></div>`;
+        }
+        document.getElementById('featureGroups').innerHTML = groupsHTML;
+
+        // Feature detail
+        let detailHTML = '';
+        for (const [group, feats] of Object.entries(p.step3_features)) {
+            detailHTML += `<div style="color:#7c4dff;font-weight:600;font-size:0.82rem;margin:10px 0 6px;">${group}</div>`;
+            for (const [name, val] of Object.entries(feats)) {
+                detailHTML += `<div class="feat-row"><span class="fname">${name}</span><span class="fval">${val}</span></div>`;
+            }
+        }
+        document.getElementById('featureDetail').innerHTML = detailHTML;
+
+        await showStep('step3', 600);
+        await showStep('conn3', 500);
+
+        // === STEP 4: Normalization ===
+        let normHTML = '';
+        const rawKeys = Object.keys(p.step4_raw);
+        for (const key of rawKeys) {
+            normHTML += `<tr>
+                <td>${key}</td>
+                <td class="raw">${p.step4_raw[key]}</td>
+                <td class="norm-arrow">&rarr;</td>
+                <td class="scaled">${p.step4_scaled[key]}</td>
+            </tr>`;
+        }
+        normHTML += `<tr><td style="color:#666;">... et ${p.step3_total - rawKeys.length} autres</td><td></td><td></td><td></td></tr>`;
+        document.getElementById('normBody').innerHTML = normHTML;
+        document.getElementById('normTotal').textContent = p.step3_total;
+
+        await showStep('step4', 600);
+        await showStep('conn4', 500);
+
+        // === STEP 5: Prediction ===
+        document.getElementById('predictedGenre').textContent = data.genre;
+        document.getElementById('confidenceText').textContent = `Confiance: ${data.confidence}%`;
+
+        let probHTML = '';
+        data.probabilities.forEach((item, i) => {
+            probHTML += `
+                <div class="prob-item">
+                    <span class="prob-label">${item.genre}</span>
+                    <div class="prob-bar-bg">
+                        <div class="prob-bar ${i === 0 ? 'top' : ''}" style="width: 0%;" data-width="${item.probability}"></div>
+                    </div>
+                    <span class="prob-value">${item.probability}%</span>
+                </div>`;
+        });
+        document.getElementById('probBars').innerHTML = probHTML;
+
+        await showStep('step5', 600);
+
+        // Animate bars after step is visible
+        setTimeout(() => {
+            document.querySelectorAll('.prob-bar').forEach(bar => {
+                bar.style.width = bar.dataset.width + '%';
+            });
+        }, 100);
+    }
+
+    // Toggle features detail
+    document.getElementById('toggleFeatures').addEventListener('click', () => {
+        const detail = document.getElementById('featureDetail');
+        const btn = document.getElementById('toggleFeatures');
+        detail.classList.toggle('open');
+        btn.textContent = detail.classList.contains('open') ? 'Masquer les features' : 'Voir toutes les features';
     });
 
     // Reset
@@ -348,8 +699,10 @@
         fileInput.value = '';
         document.getElementById('fileName').textContent = '';
         predictBtn.disabled = true;
-        result.style.display = 'none';
-        errorDiv.style.display = 'none';
+        pipeline.classList.remove('active');
+        resetSteps();
+        errorMsg.style.display = 'none';
+        document.getElementById('uploadContainer').scrollIntoView({ behavior: 'smooth' });
     });
 </script>
 
