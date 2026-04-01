@@ -1,12 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Classification des Genres Musicaux</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-family: "Segoe UI", Tahoma, sans-serif;
             max-width: 900px;
             margin: 0 auto;
             padding: 30px 20px;
@@ -62,8 +63,14 @@
             margin: 0 auto 30px;
         }
 
-        .btn:hover { background: #2980b9; }
-        .btn:disabled { background: #aaa; cursor: not-allowed; }
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
 
         .filename {
             margin-top: 10px;
@@ -77,7 +84,7 @@
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .result-box h2 {
@@ -135,7 +142,9 @@
             transition: width 0.5s;
         }
 
-        .prob-bar.top { background: #27ae60; }
+        .prob-bar.top {
+            background: #27ae60;
+        }
 
         .prob-value {
             width: 50px;
@@ -167,35 +176,42 @@
             display: none;
         }
 
-        #results { display: none; }
+        #results {
+            display: none;
+        }
     </style>
 </head>
-<body>
 
+<body>
     <h1>Classification des Genres Musicaux</h1>
-    <p class="subtitle">Uploadez un fichier audio pour predire son genre musical</p>
+    <p class="subtitle">
+        Uploadez un fichier audio pour predire son genre musical
+    </p>
 
     <!-- upload -->
     <div class="upload-box" onclick="document.getElementById('fileInput').click()">
         <p>Cliquez ici ou glissez un fichier audio</p>
-        <p style="font-size: 0.85rem; color: #999;">Formats : .wav, .mp3, .ogg, .flac</p>
-        <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac">
+        <p style="font-size: 0.85rem; color: #999">
+            Formats : .wav, .mp3, .ogg, .flac
+        </p>
+        <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac" />
         <div class="filename" id="fileName"></div>
     </div>
 
-    <button class="btn" id="predictBtn" disabled onclick="predict()">Classifier</button>
+    <button class="btn" id="predictBtn" disabled onclick="predict()">
+        Classifier
+    </button>
 
     <div class="loading" id="loading">Analyse en cours...</div>
     <div class="error" id="error"></div>
 
     <!-- resultats -->
     <div id="results">
-
         <div class="result-box">
             <div class="genre-result">
                 <div class="genre-name" id="genreName"></div>
                 <div class="confidence" id="confidence"></div>
-                <div style="margin-top: 5px; color: #999; font-size: 0.9rem;" id="fileInfo"></div>
+                <div style="margin-top: 5px; color: #999; font-size: 0.9rem" id="fileInfo"></div>
             </div>
         </div>
 
@@ -206,27 +222,26 @@
 
         <div class="result-box">
             <h2>Forme d'onde</h2>
-            <img class="viz-img" id="waveformImg">
+            <img class="viz-img" id="waveformImg" />
         </div>
 
         <div class="result-box">
             <h2>Spectrogramme Mel</h2>
-            <img class="viz-img" id="spectrogramImg">
+            <img class="viz-img" id="spectrogramImg" />
         </div>
 
         <div class="result-box">
             <h2>MFCC</h2>
-            <img class="viz-img" id="mfccImg">
+            <img class="viz-img" id="mfccImg" />
         </div>
-
     </div>
 
     <script>
-        const fileInput = document.getElementById('fileInput');
-        const predictBtn = document.getElementById('predictBtn');
-        const fileName = document.getElementById('fileName');
+        const fileInput = document.getElementById("fileInput");
+        const predictBtn = document.getElementById("predictBtn");
+        const fileName = document.getElementById("fileName");
 
-        fileInput.addEventListener('change', function() {
+        fileInput.addEventListener("change", function () {
             if (this.files.length > 0) {
                 fileName.textContent = this.files[0].name;
                 predictBtn.disabled = false;
@@ -234,14 +249,19 @@
         });
 
         // drag & drop
-        const uploadBox = document.querySelector('.upload-box');
-        uploadBox.addEventListener('dragover', e => { e.preventDefault(); uploadBox.style.borderColor = '#3498db'; });
-        uploadBox.addEventListener('dragleave', () => { uploadBox.style.borderColor = '#ccc'; });
-        uploadBox.addEventListener('drop', e => {
+        const uploadBox = document.querySelector(".upload-box");
+        uploadBox.addEventListener("dragover", (e) => {
             e.preventDefault();
-            uploadBox.style.borderColor = '#ccc';
+            uploadBox.style.borderColor = "#3498db";
+        });
+        uploadBox.addEventListener("dragleave", () => {
+            uploadBox.style.borderColor = "#ccc";
+        });
+        uploadBox.addEventListener("drop", (e) => {
+            e.preventDefault();
+            uploadBox.style.borderColor = "#ccc";
             fileInput.files = e.dataTransfer.files;
-            fileInput.dispatchEvent(new Event('change'));
+            fileInput.dispatchEvent(new Event("change"));
         });
 
         function predict() {
@@ -249,35 +269,37 @@
             if (!file) return;
 
             // afficher le chargement
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('results').style.display = 'none';
-            document.getElementById('error').style.display = 'none';
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("results").style.display = "none";
+            document.getElementById("error").style.display = "none";
             predictBtn.disabled = true;
 
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append("file", file);
 
-            fetch('/predict', { method: 'POST', body: formData })
-                .then(r => r.json())
-                .then(data => {
-                    document.getElementById('loading').style.display = 'none';
+            fetch("/predict", { method: "POST", body: formData })
+                .then((r) => r.json())
+                .then((data) => {
+                    document.getElementById("loading").style.display = "none";
                     predictBtn.disabled = false;
 
                     if (data.error) {
-                        document.getElementById('error').textContent = data.error;
-                        document.getElementById('error').style.display = 'block';
+                        document.getElementById("error").textContent = data.error;
+                        document.getElementById("error").style.display = "block";
                         return;
                     }
 
                     // afficher le resultat
-                    document.getElementById('genreName').textContent = data.genre;
-                    document.getElementById('confidence').textContent = 'Confiance : ' + data.confidence + '%';
-                    document.getElementById('fileInfo').textContent = data.filename + ' - ' + data.duration + 's';
+                    document.getElementById("genreName").textContent = data.genre;
+                    document.getElementById("confidence").textContent =
+                        "Confiance : " + data.confidence + "%";
+                    document.getElementById("fileInfo").textContent =
+                        data.filename + " - " + data.duration + "s";
 
                     // barres de probabilites
-                    let barsHtml = '';
+                    let barsHtml = "";
                     data.probabilities.forEach((p, i) => {
-                        const topClass = i === 0 ? 'top' : '';
+                        const topClass = i === 0 ? "top" : "";
                         barsHtml += `
                             <div class="prob-bar-container">
                                 <div class="prob-label">${p.genre}</div>
@@ -287,23 +309,27 @@
                                 <div class="prob-value">${p.probability}%</div>
                             </div>`;
                     });
-                    document.getElementById('probBars').innerHTML = barsHtml;
+                    document.getElementById("probBars").innerHTML = barsHtml;
 
                     // images
-                    document.getElementById('waveformImg').src = 'data:image/png;base64,' + data.waveform_img;
-                    document.getElementById('spectrogramImg').src = 'data:image/png;base64,' + data.spectrogram_img;
-                    document.getElementById('mfccImg').src = 'data:image/png;base64,' + data.mfcc_img;
+                    document.getElementById("waveformImg").src =
+                        "data:image/png;base64," + data.waveform_img;
+                    document.getElementById("spectrogramImg").src =
+                        "data:image/png;base64," + data.spectrogram_img;
+                    document.getElementById("mfccImg").src =
+                        "data:image/png;base64," + data.mfcc_img;
 
-                    document.getElementById('results').style.display = 'block';
+                    document.getElementById("results").style.display = "block";
                 })
-                .catch(err => {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('error').textContent = 'Erreur: ' + err.message;
-                    document.getElementById('error').style.display = 'block';
+                .catch((err) => {
+                    document.getElementById("loading").style.display = "none";
+                    document.getElementById("error").textContent =
+                        "Erreur: " + err.message;
+                    document.getElementById("error").style.display = "block";
                     predictBtn.disabled = false;
                 });
         }
     </script>
-
 </body>
+
 </html>

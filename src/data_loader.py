@@ -29,12 +29,14 @@ class DataLoader:
 
             for file in genre_path.iterdir():
                 if file.suffix.lower() in [".wav", ".au", ".mp3"]:
-                    files_info.append({
-                        "filepath": str(file),
-                        "filename": file.name,
-                        "genre": genre,
-                        "extension": file.suffix,
-                    })
+                    files_info.append(
+                        {
+                            "filepath": str(file),
+                            "filename": file.name,
+                            "genre": genre,
+                            "extension": file.suffix,
+                        }
+                    )
 
         df = pd.DataFrame(files_info)
         print(f"{len(df)} fichiers audio trouves.")

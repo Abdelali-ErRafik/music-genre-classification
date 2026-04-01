@@ -26,8 +26,7 @@ class FeatureExtractor:
 
         # MFCC (13 coefficients)
         mfcc = librosa.feature.mfcc(
-            y=y, sr=sr, n_mfcc=self.n_mfcc,
-            n_fft=self.n_fft, hop_length=self.hop_length
+            y=y, sr=sr, n_mfcc=self.n_mfcc, n_fft=self.n_fft, hop_length=self.hop_length
         )
         for i in range(self.n_mfcc):
             features[f"mfcc_{i+1}_mean"] = np.mean(mfcc[i])
@@ -96,7 +95,9 @@ class FeatureExtractor:
     def extract_features_from_file(self, filepath):
         # extraire les features d'un fichier audio
         try:
-            y, sr = librosa.load(filepath, sr=self.sample_rate, duration=Config.DURATION)
+            y, sr = librosa.load(
+                filepath, sr=self.sample_rate, duration=Config.DURATION
+            )
             return self.extract_all_features(y, sr)
         except Exception as e:
             print(f"Erreur pour {filepath}: {e}")
@@ -107,7 +108,9 @@ class FeatureExtractor:
         all_features = []
 
         if show_progress:
-            iterator = tqdm(df.iterrows(), total=len(df), desc="Extraction des features")
+            iterator = tqdm(
+                df.iterrows(), total=len(df), desc="Extraction des features"
+            )
         else:
             iterator = df.iterrows()
 

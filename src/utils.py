@@ -49,6 +49,7 @@ def check_dependencies():
 def set_random_seed(seed=42):
     # fixer la graine pour la reproductibilite
     import random
+
     random.seed(seed)
     np.random.seed(seed)
     print(f"Graine aleatoire fixee a {seed}")

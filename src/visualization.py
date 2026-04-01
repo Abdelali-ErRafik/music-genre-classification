@@ -52,7 +52,9 @@ class Visualizer:
         fig, ax = plt.subplots(figsize=self.figsize)
         mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=Config.N_MELS)
         mel_db = librosa.power_to_db(mel_spec, ref=np.max)
-        img = librosa.display.specshow(mel_db, sr=sr, x_axis="time", y_axis="mel", ax=ax)
+        img = librosa.display.specshow(
+            mel_db, sr=sr, x_axis="time", y_axis="mel", ax=ax
+        )
         ax.set_title(title, fontsize=14)
         fig.colorbar(img, ax=ax, format="%+2.0f dB")
         plt.tight_layout()
@@ -77,7 +79,9 @@ class Visualizer:
         # chromagramme
         fig, ax = plt.subplots(figsize=self.figsize)
         chroma = librosa.feature.chroma_stft(y=y, sr=sr)
-        img = librosa.display.specshow(chroma, sr=sr, x_axis="time", y_axis="chroma", ax=ax)
+        img = librosa.display.specshow(
+            chroma, sr=sr, x_axis="time", y_axis="chroma", ax=ax
+        )
         ax.set_title(title, fontsize=14)
         fig.colorbar(img, ax=ax)
         plt.tight_layout()
@@ -95,8 +99,13 @@ class Visualizer:
         ax.set_xlabel("Genre")
         ax.set_ylabel("Nombre de fichiers")
         for bar, count in zip(bars, counts.values):
-            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1,
-                    str(count), ha="center", fontsize=10)
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + 1,
+                str(count),
+                ha="center",
+                fontsize=10,
+            )
         plt.xticks(rotation=45)
         plt.tight_layout()
         if save_name:
@@ -129,8 +138,9 @@ class Visualizer:
         corr = df[features].corr()
         fig, ax = plt.subplots(figsize=(14, 12))
         mask = np.triu(np.ones_like(corr, dtype=bool))
-        sns.heatmap(corr, mask=mask, annot=False, cmap="RdBu_r",
-                    center=0, square=True, ax=ax)
+        sns.heatmap(
+            corr, mask=mask, annot=False, cmap="RdBu_r", center=0, square=True, ax=ax
+        )
         ax.set_title("Matrice de Correlation", fontsize=14)
         plt.tight_layout()
         if save_name:
@@ -139,7 +149,9 @@ class Visualizer:
 
     def plot_pca_2d(self, df, save_name=None):
         # projection PCA en 2D
-        feat_cols = [c for c in df.columns if c not in ["filename", "genre", "filepath"]]
+        feat_cols = [
+            c for c in df.columns if c not in ["filename", "genre", "filepath"]
+        ]
         X = df[feat_cols].values
         y = df["genre"].values
 
@@ -155,8 +167,9 @@ class Visualizer:
 
         for genre, color in zip(genres, colors):
             mask = y == genre
-            ax.scatter(X_pca[mask, 0], X_pca[mask, 1], c=[color],
-                      label=genre, alpha=0.7, s=50)
+            ax.scatter(
+                X_pca[mask, 0], X_pca[mask, 1], c=[color], label=genre, alpha=0.7, s=50
+            )
 
         ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)")
         ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)")

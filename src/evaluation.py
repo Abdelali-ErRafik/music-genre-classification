@@ -26,7 +26,9 @@ class Evaluator:
         # calculer les metriques de classification
         metrics = {
             "accuracy": accuracy_score(y_true, y_pred),
-            "precision": precision_score(y_true, y_pred, average=average, zero_division=0),
+            "precision": precision_score(
+                y_true, y_pred, average=average, zero_division=0
+            ),
             "recall": recall_score(y_true, y_pred, average=average, zero_division=0),
             "f1_score": f1_score(y_true, y_pred, average=average, zero_division=0),
         }
@@ -35,8 +37,14 @@ class Evaluator:
     def get_confusion_matrix(self, y_true, y_pred, normalize=None):
         return confusion_matrix(y_true, y_pred, normalize=normalize)
 
-    def plot_confusion_matrix(self, y_true, y_pred, normalize=False,
-                              title="Matrice de Confusion", save_name=None):
+    def plot_confusion_matrix(
+        self,
+        y_true,
+        y_pred,
+        normalize=False,
+        title="Matrice de Confusion",
+        save_name=None,
+    ):
         # afficher la matrice de confusion
         norm = "true" if normalize else None
         cm = self.get_confusion_matrix(y_true, y_pred, normalize=norm)
@@ -44,8 +52,13 @@ class Evaluator:
         fig, ax = plt.subplots(figsize=(12, 10))
         fmt = ".2f" if normalize else "d"
         sns.heatmap(
-            cm, annot=True, fmt=fmt, cmap="Blues",
-            xticklabels=self.genres, yticklabels=self.genres, ax=ax,
+            cm,
+            annot=True,
+            fmt=fmt,
+            cmap="Blues",
+            xticklabels=self.genres,
+            yticklabels=self.genres,
+            ax=ax,
         )
         ax.set_title(title, fontsize=14)
         ax.set_xlabel("Predit")
@@ -57,20 +70,23 @@ class Evaluator:
             fig.savefig(self.save_path / save_name, dpi=100, bbox_inches="tight")
         return fig
 
-    def plot_classification_report(self, y_true, y_pred,
-                                    title="Rapport de Classification", save_name=None):
+    def plot_classification_report(
+        self, y_true, y_pred, title="Rapport de Classification", save_name=None
+    ):
         # visualiser precision, recall, f1 par genre
         report = classification_report(
-            y_true, y_pred, target_names=self.genres,
-            output_dict=True, zero_division=0
+            y_true, y_pred, target_names=self.genres, output_dict=True, zero_division=0
         )
-        class_metrics = pd.DataFrame(report).transpose().iloc[:len(self.genres)]
+        class_metrics = pd.DataFrame(report).transpose().iloc[: len(self.genres)]
 
         fig, axes = plt.subplots(1, 3, figsize=(15, 6))
         fig.suptitle(title, fontsize=14)
 
-        for ax, metric, color in zip(axes, ["precision", "recall", "f1-score"],
-                                      ["steelblue", "coral", "seagreen"]):
+        for ax, metric, color in zip(
+            axes,
+            ["precision", "recall", "f1-score"],
+            ["steelblue", "coral", "seagreen"],
+        ):
             vals = class_metrics[metric].values
             ax.barh(self.genres, vals, color=color)
             ax.set_xlim(0, 1)
@@ -88,13 +104,15 @@ class Evaluator:
         comparison = []
         for name, res in results_dict.items():
             m = res["metrics"]
-            comparison.append({
-                "Model": name,
-                "Accuracy": m["accuracy"],
-                "Precision": m["precision"],
-                "Recall": m["recall"],
-                "F1-Score": m["f1_score"],
-            })
+            comparison.append(
+                {
+                    "Model": name,
+                    "Accuracy": m["accuracy"],
+                    "Precision": m["precision"],
+                    "Recall": m["recall"],
+                    "F1-Score": m["f1_score"],
+                }
+            )
         df = pd.DataFrame(comparison)
         df = df.sort_values("Accuracy", ascending=False)
         return df
@@ -107,12 +125,16 @@ class Evaluator:
         x = np.arange(len(comp_df))
         width = 0.2
 
-        for i, (metric, color) in enumerate(zip(
-            ["Accuracy", "Precision", "Recall", "F1-Score"],
-            ["steelblue", "coral", "seagreen", "purple"]
-        )):
+        for i, (metric, color) in enumerate(
+            zip(
+                ["Accuracy", "Precision", "Recall", "F1-Score"],
+                ["steelblue", "coral", "seagreen", "purple"],
+            )
+        ):
             offset = (i - 1.5) * width
-            ax.bar(x + offset, comp_df[metric], width, label=metric, color=color, alpha=0.8)
+            ax.bar(
+                x + offset, comp_df[metric], width, label=metric, color=color, alpha=0.8
+            )
 
         ax.set_xlabel("Modele")
         ax.set_ylabel("Score")
@@ -137,7 +159,9 @@ class Evaluator:
         print(f"Precision : {metrics['precision']:.4f}")
         print(f"Recall    : {metrics['recall']:.4f}")
         print(f"F1-Score  : {metrics['f1_score']:.4f}")
-        print(f"\n{classification_report(y_true, y_pred, target_names=self.genres, zero_division=0)}")
+        print(
+            f"\n{classification_report(y_true, y_pred, target_names=self.genres, zero_division=0)}"
+        )
 
 
 if __name__ == "__main__":

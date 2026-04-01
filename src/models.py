@@ -35,18 +35,24 @@ class ModelTrainer:
                 n_estimators=200, max_depth=20, random_state=Config.RANDOM_STATE
             ),
             "Gradient Boosting": GradientBoostingClassifier(
-                n_estimators=100, learning_rate=0.1, max_depth=5,
-                random_state=Config.RANDOM_STATE
+                n_estimators=100,
+                learning_rate=0.1,
+                max_depth=5,
+                random_state=Config.RANDOM_STATE,
             ),
             "MLP": MLPClassifier(
-                hidden_layer_sizes=(100, 50), activation="relu",
-                max_iter=500, random_state=Config.RANDOM_STATE
+                hidden_layer_sizes=(100, 50),
+                activation="relu",
+                max_iter=500,
+                random_state=Config.RANDOM_STATE,
             ),
         }
 
     def prepare_data(self, df, test_size=0.2, val_size=0.1):
         # on separe features et labels
-        feat_cols = [c for c in df.columns if c not in ["filename", "genre", "filepath"]]
+        feat_cols = [
+            c for c in df.columns if c not in ["filename", "genre", "filepath"]
+        ]
         X = df[feat_cols].values
         y = df["genre"].values
 
@@ -55,15 +61,21 @@ class ModelTrainer:
 
         # split train+val / test
         X_temp, X_test, y_temp, y_test = train_test_split(
-            X, y_enc, test_size=test_size,
-            stratify=y_enc, random_state=Config.RANDOM_STATE,
+            X,
+            y_enc,
+            test_size=test_size,
+            stratify=y_enc,
+            random_state=Config.RANDOM_STATE,
         )
 
         # split train / val
         val_ratio = val_size / (1 - test_size)
         X_train, X_val, y_train, y_val = train_test_split(
-            X_temp, y_temp, test_size=val_ratio,
-            stratify=y_temp, random_state=Config.RANDOM_STATE,
+            X_temp,
+            y_temp,
+            test_size=val_ratio,
+            stratify=y_temp,
+            random_state=Config.RANDOM_STATE,
         )
 
         # normaliser les features

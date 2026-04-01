@@ -81,7 +81,9 @@ def predict_genre(audio_path, model_path=None):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Predire le genre musical d'un fichier audio")
+    parser = argparse.ArgumentParser(
+        description="Predire le genre musical d'un fichier audio"
+    )
     parser.add_argument("audio", type=str, help="Chemin vers le fichier audio")
     parser.add_argument("--model", type=str, default=None, help="Chemin vers le modele")
 

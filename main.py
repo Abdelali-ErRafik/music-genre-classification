@@ -9,7 +9,13 @@ from src.feature_extraction import FeatureExtractor
 from src.visualization import Visualizer
 from src.models import ModelTrainer
 from src.evaluation import Evaluator
-from src.utils import print_header, print_section, Timer, check_dependencies, set_random_seed
+from src.utils import (
+    print_header,
+    print_section,
+    Timer,
+    check_dependencies,
+    set_random_seed,
+)
 
 
 def step_extract_features():
@@ -32,7 +38,9 @@ def step_extract_features():
     features_path = Config.DATA_PROCESSED / Config.FEATURES_FILE
 
     with Timer("Extraction des caracteristiques"):
-        features_df = extractor.extract_features_from_dataset(df, save_path=features_path)
+        features_df = extractor.extract_features_from_dataset(
+            df, save_path=features_path
+        )
 
     return features_df
 
@@ -47,9 +55,16 @@ def step_visualize(features_df):
     vis.plot_genre_distribution(features_df, save_name="genre_distribution.png")
 
     # quelques features importantes
-    for feature in ["spectral_centroid_mean", "tempo", "zero_crossing_rate_mean", "mfcc_1_mean"]:
+    for feature in [
+        "spectral_centroid_mean",
+        "tempo",
+        "zero_crossing_rate_mean",
+        "mfcc_1_mean",
+    ]:
         if feature in features_df.columns:
-            vis.plot_feature_distribution(features_df, feature, save_name=f"dist_{feature}.png")
+            vis.plot_feature_distribution(
+                features_df, feature, save_name=f"dist_{feature}.png"
+            )
 
     # matrice de correlation
     vis.plot_correlation_matrix(features_df, save_name="correlation_matrix.png")
@@ -101,14 +116,17 @@ def step_evaluate(trainer, X_test, y_test):
 
     # matrice de confusion
     evaluator.plot_confusion_matrix(
-        y_test, y_pred, normalize=True,
+        y_test,
+        y_pred,
+        normalize=True,
         title=f"Matrice de Confusion - {best_name}",
         save_name="confusion_matrix.png",
     )
 
     # rapport de classification
     evaluator.plot_classification_report(
-        y_test, y_pred,
+        y_test,
+        y_pred,
         title=f"Rapport - {best_name}",
         save_name="classification_report.png",
     )
