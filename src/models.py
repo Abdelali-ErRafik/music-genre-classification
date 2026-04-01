@@ -8,7 +8,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.neural_network import MLPClassifier
 
 from .config import Config
 
@@ -32,6 +33,14 @@ class ModelTrainer:
             "SVM": SVC(kernel="rbf", C=10, gamma="scale", probability=True),
             "Random Forest": RandomForestClassifier(
                 n_estimators=200, max_depth=20, random_state=Config.RANDOM_STATE
+            ),
+            "Gradient Boosting": GradientBoostingClassifier(
+                n_estimators=100, learning_rate=0.1, max_depth=5,
+                random_state=Config.RANDOM_STATE
+            ),
+            "MLP": MLPClassifier(
+                hidden_layer_sizes=(100, 50), activation="relu",
+                max_iter=500, random_state=Config.RANDOM_STATE
             ),
         }
 
