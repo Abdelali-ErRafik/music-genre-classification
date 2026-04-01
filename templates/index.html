@@ -1,14 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Music Genre Classifier</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
             color: #fff;
@@ -18,14 +23,24 @@
             padding: 40px 20px;
         }
 
-        h1 { font-size: 2.4rem; margin-bottom: 8px; text-align: center; }
-        .subtitle { color: #aaa; margin-bottom: 40px; font-size: 1rem; text-align: center; }
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 40px;
+            font-size: 1rem;
+            text-align: center;
+        }
 
         /* ===== UPLOAD ===== */
         .upload-container {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 40px;
             max-width: 580px;
@@ -33,7 +48,7 @@
         }
 
         .upload-area {
-            border: 2px dashed rgba(255,255,255,0.3);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
             border-radius: 16px;
             padding: 50px 20px;
             text-align: center;
@@ -42,76 +57,172 @@
             margin-bottom: 20px;
         }
 
-        .upload-area:hover, .upload-area.dragover { border-color: #7c4dff; background: rgba(124,77,255,0.1); }
-        .upload-area .icon { font-size: 3rem; margin-bottom: 12px; }
-        .upload-area p { color: #bbb; font-size: 0.95rem; }
-        .upload-area .filename { color: #7c4dff; font-weight: 600; font-size: 1.1rem; margin-top: 8px; }
-        .formats { color: #888; font-size: 0.8rem; margin-top: 6px; }
-        input[type="file"] { display: none; }
-
-        .btn {
-            width: 100%; padding: 16px;
-            background: linear-gradient(135deg, #7c4dff, #448aff);
-            border: none; border-radius: 12px; color: #fff;
-            font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s;
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #7c4dff;
+            background: rgba(124, 77, 255, 0.1);
         }
 
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,77,255,0.4); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .upload-area .icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .upload-area p {
+            color: #bbb;
+            font-size: 0.95rem;
+        }
+
+        .upload-area .filename {
+            color: #7c4dff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 8px;
+        }
+
+        .formats {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #7c4dff, #448aff);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 77, 255, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
 
         .error-msg {
-            display: none; background: rgba(255,82,82,0.15); border: 1px solid rgba(255,82,82,0.3);
-            border-radius: 12px; padding: 16px; margin-top: 20px; text-align: center; color: #ff5252;
+            display: none;
+            background: rgba(255, 82, 82, 0.15);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            text-align: center;
+            color: #ff5252;
         }
 
         /* ===== PIPELINE ===== */
-        .pipeline { display: none; max-width: 880px; width: 100%; margin-top: 40px; }
-        .pipeline.active { display: block; }
+        .pipeline {
+            display: none;
+            max-width: 880px;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .pipeline.active {
+            display: block;
+        }
 
         .step {
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            transition:
+                opacity 0.5s ease,
+                transform 0.5s ease;
             margin-bottom: 24px;
         }
-        .step.visible { opacity: 1; transform: translateY(0); }
+
+        .step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         .step-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px; overflow: hidden;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
         }
 
         .step-header {
-            display: flex; align-items: center; gap: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
             padding: 18px 24px;
-            background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .step-number {
-            width: 38px; height: 38px; border-radius: 50%;
-            background: rgba(124,77,255,0.15); border: 2px solid #7c4dff;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 0.9rem; color: #7c4dff; flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(124, 77, 255, 0.15);
+            border: 2px solid #7c4dff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #7c4dff;
+            flex-shrink: 0;
         }
 
-        .step.visible .step-number { background: #7c4dff; color: #fff; }
+        .step.visible .step-number {
+            background: #7c4dff;
+            color: #fff;
+        }
 
-        .step-title { font-size: 1.05rem; font-weight: 600; }
-        .step-desc { font-size: 0.82rem; color: #999; margin-top: 2px; }
-        .step-body { padding: 20px 24px; }
+        .step-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .step-desc {
+            font-size: 0.82rem;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .step-body {
+            padding: 20px 24px;
+        }
 
         /* Connector */
         .connector {
-            width: 2px; height: 24px;
-            background: rgba(124,77,255,0.2);
-            margin: 0 auto; opacity: 0; transition: opacity 0.3s;
+            width: 2px;
+            height: 24px;
+            background: rgba(124, 77, 255, 0.2);
+            margin: 0 auto;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        .connector.visible { opacity: 1; background: linear-gradient(to bottom, #7c4dff, rgba(124,77,255,0.2)); }
+
+        .connector.visible {
+            opacity: 1;
+            background: linear-gradient(to bottom,
+                    #7c4dff,
+                    rgba(124, 77, 255, 0.2));
+        }
 
         /* ===== EXPLANATION BOX ===== */
         .explain {
-            background: rgba(124,77,255,0.06);
+            background: rgba(124, 77, 255, 0.06);
             border-left: 3px solid #7c4dff;
             border-radius: 0 12px 12px 0;
             padding: 16px 20px;
@@ -121,7 +232,9 @@
             color: #c0c0d8;
         }
 
-        .explain strong { color: #d0c0ff; }
+        .explain strong {
+            color: #d0c0ff;
+        }
 
         .explain-title {
             color: #a090e0;
@@ -134,11 +247,11 @@
 
         /* ===== RAW SAMPLES DISPLAY ===== */
         .raw-samples {
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 10px;
             padding: 14px 18px;
-            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
             font-size: 0.78rem;
             color: #4caf50;
             overflow-x: auto;
@@ -146,17 +259,29 @@
             line-height: 1.6;
         }
 
-        .raw-samples .label { color: #888; font-size: 0.72rem; }
-        .raw-samples .index { color: #ff9800; }
-        .raw-samples .arrow { color: #666; }
-        .raw-samples .time { color: #7c4dff; }
+        .raw-samples .label {
+            color: #888;
+            font-size: 0.72rem;
+        }
+
+        .raw-samples .index {
+            color: #ff9800;
+        }
+
+        .raw-samples .arrow {
+            color: #666;
+        }
+
+        .raw-samples .time {
+            color: #7c4dff;
+        }
 
         /* ===== AUDIO PLAYER ===== */
         .audio-player {
             width: 100%;
             margin: 16px 0 8px;
             border-radius: 12px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 14px 18px;
         }
 
@@ -173,61 +298,132 @@
         }
 
         /* ===== STATS ===== */
-        .audio-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-
-        .stat-box {
-            background: rgba(255,255,255,0.04);
-            border-radius: 10px; padding: 14px; text-align: center;
+        .audio-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
         }
 
-        .stat-value { font-size: 1.4rem; font-weight: 700; color: #7c4dff; }
-        .stat-label { font-size: 0.75rem; color: #888; margin-top: 4px; }
+        .stat-box {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #7c4dff;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 4px;
+        }
 
         /* ===== VIZ ===== */
-        .viz-image { width: 100%; border-radius: 10px; margin-top: 8px; }
-        .viz-label { font-size: 0.85rem; color: #bbb; margin-top: 18px; margin-bottom: 4px; font-weight: 600; }
+        .viz-image {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 8px;
+        }
+
+        .viz-label {
+            font-size: 0.85rem;
+            color: #bbb;
+            margin-top: 18px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
 
         /* ===== FEATURES ===== */
         .feature-groups {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px; margin-bottom: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .feat-group {
-            background: rgba(255,255,255,0.04);
-            border-radius: 10px; padding: 14px; text-align: center;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
         }
 
-        .feat-group .count { font-size: 1.5rem; font-weight: 700; color: #7c4dff; }
-        .feat-group .name { font-size: 0.78rem; color: #999; margin-top: 2px; }
-        .feat-group .hint { font-size: 0.7rem; color: #666; margin-top: 4px; font-style: italic; }
+        .feat-group .count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #7c4dff;
+        }
+
+        .feat-group .name {
+            font-size: 0.78rem;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .feat-group .hint {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
 
         .feature-detail-toggle {
-            padding: 8px 20px; background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
-            color: #aaa; font-size: 0.82rem; cursor: pointer; transition: all 0.3s;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            color: #aaa;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .feature-detail-toggle:hover { background: rgba(124,77,255,0.15); color: #ccc; }
+
+        .feature-detail-toggle:hover {
+            background: rgba(124, 77, 255, 0.15);
+            color: #ccc;
+        }
 
         .feature-detail {
-            display: none; margin-top: 14px; max-height: 280px;
-            overflow-y: auto; background: rgba(0,0,0,0.3);
-            border-radius: 10px; padding: 14px;
+            display: none;
+            margin-top: 14px;
+            max-height: 280px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 14px;
         }
-        .feature-detail.open { display: block; }
+
+        .feature-detail.open {
+            display: block;
+        }
 
         .feat-row {
-            display: flex; justify-content: space-between;
-            padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             font-size: 0.78rem;
         }
-        .feat-row .fname { color: #aaa; font-family: 'Cascadia Code', 'Consolas', monospace; }
-        .feat-row .fval { color: #7c4dff; font-weight: 600; }
+
+        .feat-row .fname {
+            color: #aaa;
+            font-family: "Cascadia Code", "Consolas", monospace;
+        }
+
+        .feat-row .fval {
+            color: #7c4dff;
+            font-weight: 600;
+        }
 
         /* ===== NORMALIZATION ===== */
         .norm-card {
-            background: rgba(0,0,0,0.25);
-            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 12px;
             padding: 16px 18px;
             margin-bottom: 10px;
@@ -239,18 +435,41 @@
             gap: 8px;
             align-items: center;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             font-size: 0.78rem;
-            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-family: "Cascadia Code", "Consolas", monospace;
         }
 
-        .norm-row:last-child { border-bottom: none; }
+        .norm-row:last-child {
+            border-bottom: none;
+        }
 
-        .norm-row .n-name { color: #aaa; font-size: 0.75rem; }
-        .norm-row .n-raw { color: #ff9800; text-align: right; }
-        .norm-row .n-op { color: #666; text-align: center; font-size: 0.7rem; }
-        .norm-row .n-mean { color: #e040fb; text-align: right; }
-        .norm-row .n-scaled { color: #4caf50; text-align: right; font-weight: 600; }
+        .norm-row .n-name {
+            color: #aaa;
+            font-size: 0.75rem;
+        }
+
+        .norm-row .n-raw {
+            color: #ff9800;
+            text-align: right;
+        }
+
+        .norm-row .n-op {
+            color: #666;
+            text-align: center;
+            font-size: 0.7rem;
+        }
+
+        .norm-row .n-mean {
+            color: #e040fb;
+            text-align: right;
+        }
+
+        .norm-row .n-scaled {
+            color: #4caf50;
+            text-align: right;
+            font-weight: 600;
+        }
 
         .norm-header {
             display: grid;
@@ -258,65 +477,121 @@
             gap: 8px;
             padding: 0 0 8px;
             margin-bottom: 4px;
-            border-bottom: 2px solid rgba(124,77,255,0.2);
+            border-bottom: 2px solid rgba(124, 77, 255, 0.2);
             font-size: 0.72rem;
             color: #888;
             font-weight: 600;
         }
 
-        .norm-header span:nth-child(3), .norm-header span:nth-child(5) { text-align: center; }
-        .norm-header span:nth-child(2), .norm-header span:nth-child(4), .norm-header span:nth-child(6) { text-align: right; }
+        .norm-header span:nth-child(3),
+        .norm-header span:nth-child(5) {
+            text-align: center;
+        }
+
+        .norm-header span:nth-child(2),
+        .norm-header span:nth-child(4),
+        .norm-header span:nth-child(6) {
+            text-align: right;
+        }
 
         .norm-formula {
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: 8px;
             padding: 12px 16px;
             text-align: center;
-            font-family: 'Cascadia Code', 'Consolas', monospace;
+            font-family: "Cascadia Code", "Consolas", monospace;
             font-size: 0.85rem;
             margin-bottom: 14px;
             color: #c0b0ff;
         }
 
-        .norm-note { font-size: 0.78rem; color: #777; font-style: italic; margin-top: 10px; }
-
-        /* ===== RESULT ===== */
-        .result-box { text-align: center; margin-bottom: 24px; }
-
-        .predicted-genre {
-            font-size: 2.6rem; font-weight: 700; text-transform: uppercase;
-            background: linear-gradient(135deg, #7c4dff, #e040fb);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        .norm-note {
+            font-size: 0.78rem;
+            color: #777;
+            font-style: italic;
+            margin-top: 10px;
         }
 
-        .confidence-text { color: #aaa; font-size: 1rem; margin-top: 4px; }
+        /* ===== RESULT ===== */
+        .result-box {
+            text-align: center;
+            margin-bottom: 24px;
+        }
 
-        .prob-item { display: flex; align-items: center; margin-bottom: 8px; gap: 10px; }
-        .prob-label { width: 90px; font-size: 0.82rem; text-align: right; color: #ccc; }
+        .predicted-genre {
+            font-size: 2.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #7c4dff, #e040fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .confidence-text {
+            color: #aaa;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+
+        .prob-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 10px;
+        }
+
+        .prob-label {
+            width: 90px;
+            font-size: 0.82rem;
+            text-align: right;
+            color: #ccc;
+        }
 
         .prob-bar-bg {
-            flex: 1; height: 26px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 13px; overflow: hidden;
+            flex: 1;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 13px;
+            overflow: hidden;
         }
 
         .prob-bar {
-            height: 100%; border-radius: 13px;
+            height: 100%;
+            border-radius: 13px;
             background: linear-gradient(90deg, #7c4dff, #448aff);
-            transition: width 0.8s ease; min-width: 2px;
+            transition: width 0.8s ease;
+            min-width: 2px;
         }
 
-        .prob-bar.top { background: linear-gradient(90deg, #7c4dff, #e040fb); }
-        .prob-value { width: 50px; font-size: 0.82rem; color: #aaa; }
+        .prob-bar.top {
+            background: linear-gradient(90deg, #7c4dff, #e040fb);
+        }
+
+        .prob-value {
+            width: 50px;
+            font-size: 0.82rem;
+            color: #aaa;
+        }
 
         /* Reset */
         .reset-btn {
-            display: block; margin: 30px auto 0; padding: 12px 40px;
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 12px; color: #ccc; font-size: 0.95rem;
-            cursor: pointer; transition: all 0.3s;
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #ccc;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .reset-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
 
         /* ===== MODEL COMPARISON ===== */
         .model-table {
@@ -330,37 +605,67 @@
             padding: 10px 12px;
             font-size: 0.78rem;
             color: #888;
-            border-bottom: 2px solid rgba(124,77,255,0.2);
+            border-bottom: 2px solid rgba(124, 77, 255, 0.2);
             font-weight: 600;
         }
 
         .model-table td {
             padding: 10px 12px;
             font-size: 0.82rem;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .model-table .m-name { color: #ccc; font-weight: 600; }
-        .model-table .m-genre { color: #7c4dff; font-weight: 600; text-transform: capitalize; }
-        .model-table .m-conf { color: #4caf50; }
-        .model-table .m-acc { color: #ff9800; }
+        .model-table .m-name {
+            color: #ccc;
+            font-weight: 600;
+        }
+
+        .model-table .m-genre {
+            color: #7c4dff;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .model-table .m-conf {
+            color: #4caf50;
+        }
+
+        .model-table .m-acc {
+            color: #ff9800;
+        }
 
         .consensus-box {
-            background: linear-gradient(135deg, rgba(124,77,255,0.12), rgba(224,64,251,0.08));
-            border: 1px solid rgba(124,77,255,0.25);
+            background: linear-gradient(135deg,
+                    rgba(124, 77, 255, 0.12),
+                    rgba(224, 64, 251, 0.08));
+            border: 1px solid rgba(124, 77, 255, 0.25);
             border-radius: 14px;
             padding: 24px;
             text-align: center;
             margin-top: 20px;
         }
 
-        .consensus-label { font-size: 0.82rem; color: #aaa; margin-bottom: 6px; }
-        .consensus-genre {
-            font-size: 2rem; font-weight: 700; text-transform: uppercase;
-            background: linear-gradient(135deg, #7c4dff, #e040fb);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        .consensus-label {
+            font-size: 0.82rem;
+            color: #aaa;
+            margin-bottom: 6px;
         }
-        .consensus-detail { font-size: 0.85rem; color: #999; margin-top: 6px; }
+
+        .consensus-genre {
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #7c4dff, #e040fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .consensus-detail {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 6px;
+        }
 
         .viz-grid {
             display: grid;
@@ -370,44 +675,74 @@
         }
 
         @media (max-width: 700px) {
-            .viz-grid { grid-template-columns: 1fr; }
+            .viz-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Loading */
-        .btn-loading { position: relative; pointer-events: none; }
-        .btn-loading::after {
-            content: ''; position: absolute;
-            width: 20px; height: 20px;
-            border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff;
-            border-radius: 50%; animation: spin 0.7s linear infinite;
-            right: 20px; top: 50%; transform: translateY(-50%);
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
         }
-        @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
-        .footer { margin-top: 50px; padding: 20px; color: #444; font-size: 0.78rem; text-align: center; }
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin {
+            to {
+                transform: translateY(-50%) rotate(360deg);
+            }
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding: 20px;
+            color: #444;
+            font-size: 0.78rem;
+            text-align: center;
+        }
     </style>
 </head>
-<body>
 
+<body>
     <h1>Music Genre Classifier</h1>
-    <p class="subtitle">Uploadez un fichier audio et observez le pipeline de classification en action</p>
+    <p class="subtitle">
+        Uploadez un fichier audio et observez le pipeline de classification en
+        action
+    </p>
 
     <!-- UPLOAD -->
     <div class="upload-container" id="uploadContainer">
         <div id="uploadArea" class="upload-area">
             <div class="icon">&#127925;</div>
-            <p>Glissez votre fichier audio ici ou <strong>cliquez pour parcourir</strong></p>
+            <p>
+                Glissez votre fichier audio ici ou
+                <strong>cliquez pour parcourir</strong>
+            </p>
             <div class="filename" id="fileName"></div>
             <div class="formats">Formats: WAV, MP3, OGG, FLAC, M4A</div>
         </div>
-        <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac,.m4a">
-        <button class="btn" id="predictBtn" disabled>Lancer la classification</button>
+        <input type="file" id="fileInput" accept=".wav,.mp3,.ogg,.flac,.m4a" />
+        <button class="btn" id="predictBtn" disabled>
+            Lancer la classification
+        </button>
         <div class="error-msg" id="errorMsg"></div>
     </div>
 
     <!-- PIPELINE -->
     <div class="pipeline" id="pipeline">
-
         <!-- ============ STEP 1 ============ -->
         <div class="step" id="step1">
             <div class="step-card">
@@ -415,19 +750,25 @@
                     <div class="step-number">1</div>
                     <div>
                         <div class="step-title">Chargement du signal audio</div>
-                        <div class="step-desc">librosa.load() &mdash; Conversion du fichier en signal numerique</div>
+                        <div class="step-desc">
+                            librosa.load() &mdash; Conversion du fichier en signal numerique
+                        </div>
                     </div>
                 </div>
                 <div class="step-body">
                     <div class="explain">
                         <div class="explain-title">Comment le PC lit la musique ?</div>
-                        Le son est une <strong>vibration de l'air</strong>. Le microphone convertit ces vibrations en <strong>voltage electrique</strong> (+V / -V).
-                        Ensuite, la carte son mesure ce voltage <strong>22 050 fois par seconde</strong> (sample rate) et stocke chaque mesure comme un nombre entre -1 et +1.
-                        <br><br>
-                        Votre fichier audio n'est donc qu'une <strong>longue liste de nombres</strong> que Python peut traiter.
+                        Le son est une <strong>vibration de l'air</strong>. Le microphone
+                        convertit ces vibrations en
+                        <strong>voltage electrique</strong> (+V / -V). Ensuite, la carte
+                        son mesure ce voltage
+                        <strong>22 050 fois par seconde</strong> (sample rate) et stocke
+                        chaque mesure comme un nombre entre -1 et +1. <br /><br />
+                        Votre fichier audio n'est donc qu'une
+                        <strong>longue liste de nombres</strong> que Python peut traiter.
                     </div>
 
-                    <div class="audio-player" id="audioPlayer" style="display:none;">
+                    <div class="audio-player" id="audioPlayer" style="display: none">
                         <div class="audio-player-label">Ecouter le fichier audio :</div>
                         <audio id="audioElement" controls></audio>
                     </div>
@@ -448,33 +789,51 @@
                     <div class="step-number">2</div>
                     <div>
                         <div class="step-title">Analyse du signal</div>
-                        <div class="step-desc">Waveform + Mel-Spectrogramme &mdash; Visualisation temps-frequence</div>
+                        <div class="step-desc">
+                            Waveform + Mel-Spectrogramme &mdash; Visualisation
+                            temps-frequence
+                        </div>
                     </div>
                 </div>
                 <div class="step-body">
                     <div class="explain">
                         <div class="explain-title">Pourquoi visualiser ?</div>
-                        Le <strong>Waveform</strong> montre l'amplitude (volume) au fil du temps &mdash; on peut voir si la musique est calme, forte, ou variable.
-                        <br><br>
-                        Le <strong>Mel-Spectrogramme</strong> montre les <strong>frequences</strong> (grave &rarr; aigu) au fil du temps, avec les couleurs = intensite.
-                        C'est comme une "photo" du son : le metal aura beaucoup de jaune en haut (hautes frequences), le reggae aura du jaune en bas (basses).
+                        Le <strong>Waveform</strong> montre l'amplitude (volume) au fil du
+                        temps &mdash; on peut voir si la musique est calme, forte, ou
+                        variable. <br /><br />
+                        Le <strong>Mel-Spectrogramme</strong> montre les
+                        <strong>frequences</strong> (grave &rarr; aigu) au fil du temps,
+                        avec les couleurs = intensite. C'est comme une "photo" du son : le
+                        metal aura beaucoup de jaune en haut (hautes frequences), le
+                        reggae aura du jaune en bas (basses).
                     </div>
 
-                    <div class="viz-label">Waveform &mdash; Amplitude du signal dans le temps</div>
-                    <img class="viz-image" id="waveformImg" src="" alt="Waveform">
-
-                    <div class="viz-label">Mel-Spectrogramme &mdash; Quelles frequences sont presentes a chaque instant</div>
-                    <img class="viz-image" id="spectrogramImg" src="" alt="Spectrogram">
-
-                    <div class="viz-label">Spectral Centroid &mdash; "Brillance" du son au fil du temps</div>
-                    <div class="explain" style="margin-top:8px;">
-                        <div class="explain-title">Qu'est-ce que le Spectral Centroid ?</div>
-                        Le centroide spectral est la <strong>frequence moyenne ponderee</strong> du son a chaque instant.
-                        C'est comme le "centre de gravite" des frequences.
-                        <strong>Valeur haute</strong> = son brillant/aigu (metal, cymbales).
-                        <strong>Valeur basse</strong> = son grave/sombre (reggae, basse).
+                    <div class="viz-label">
+                        Waveform &mdash; Amplitude du signal dans le temps
                     </div>
-                    <img class="viz-image" id="centroidImg" src="" alt="Spectral Centroid">
+                    <img class="viz-image" id="waveformImg" src="" alt="Waveform" />
+
+                    <div class="viz-label">
+                        Mel-Spectrogramme &mdash; Quelles frequences sont presentes a
+                        chaque instant
+                    </div>
+                    <img class="viz-image" id="spectrogramImg" src="" alt="Spectrogram" />
+
+                    <div class="viz-label">
+                        Spectral Centroid &mdash; "Brillance" du son au fil du temps
+                    </div>
+                    <div class="explain" style="margin-top: 8px">
+                        <div class="explain-title">
+                            Qu'est-ce que le Spectral Centroid ?
+                        </div>
+                        Le centroide spectral est la
+                        <strong>frequence moyenne ponderee</strong> du son a chaque
+                        instant. C'est comme le "centre de gravite" des frequences.
+                        <strong>Valeur haute</strong> = son brillant/aigu (metal,
+                        cymbales). <strong>Valeur basse</strong> = son grave/sombre
+                        (reggae, basse).
+                    </div>
+                    <img class="viz-image" id="centroidImg" src="" alt="Spectral Centroid" />
                 </div>
             </div>
         </div>
@@ -488,52 +847,79 @@
                     <div class="step-number">3</div>
                     <div>
                         <div class="step-title">Extraction des caracteristiques</div>
-                        <div class="step-desc">FeatureExtractor &mdash; <span id="totalFeatures">0</span> features extraites avec librosa</div>
+                        <div class="step-desc">
+                            FeatureExtractor &mdash;
+                            <span id="totalFeatures">0</span> features extraites avec
+                            librosa
+                        </div>
                     </div>
                 </div>
                 <div class="step-body">
                     <div class="explain">
                         <div class="explain-title">Pourquoi extraire des features ?</div>
-                        661 500 nombres bruts c'est <strong>trop de donnees et pas assez de sens</strong>. On ne peut pas donner ca directement au modele.
-                        On calcule donc des <strong>mesures statistiques</strong> qui resument le son :
-                        la brillance, le tempo, l'energie, la distribution des notes, etc.
-                        <br><br>
-                        C'est comme decrire une personne : au lieu de donner la couleur de chaque pixel de sa photo, on dit
-                        "cheveux bruns, yeux verts, 1m75" &mdash; beaucoup moins de donnees, mais <strong>beaucoup plus de sens</strong>.
+                        661 500 nombres bruts c'est
+                        <strong>trop de donnees et pas assez de sens</strong>. On ne peut
+                        pas donner ca directement au modele. On calcule donc des
+                        <strong>mesures statistiques</strong> qui resument le son : la
+                        brillance, le tempo, l'energie, la distribution des notes, etc.
+                        <br /><br />
+                        C'est comme decrire une personne : au lieu de donner la couleur de
+                        chaque pixel de sa photo, on dit "cheveux bruns, yeux verts, 1m75"
+                        &mdash; beaucoup moins de donnees, mais
+                        <strong>beaucoup plus de sens</strong>.
                     </div>
 
                     <div class="feature-groups" id="featureGroups"></div>
 
-                    <button class="feature-detail-toggle" id="toggleFeatures">Voir toutes les valeurs extraites</button>
+                    <button class="feature-detail-toggle" id="toggleFeatures">
+                        Voir toutes les valeurs extraites
+                    </button>
                     <div class="feature-detail" id="featureDetail"></div>
 
-                    <div class="viz-label">MFCC (Mel-Frequency Cepstral Coefficients) &mdash; Empreinte spectrale du son</div>
-                    <div class="explain" style="margin-top:8px;">
+                    <div class="viz-label">
+                        MFCC (Mel-Frequency Cepstral Coefficients) &mdash; Empreinte
+                        spectrale du son
+                    </div>
+                    <div class="explain" style="margin-top: 8px">
                         <div class="explain-title">Qu'est-ce que les MFCC ?</div>
-                        Les MFCC representent la <strong>forme spectrale</strong> du son, filtree comme le fait l'oreille humaine.
-                        Chaque ligne horizontale est un coefficient : les premiers (en bas) captent le <strong>timbre general</strong>,
-                        les derniers (en haut) captent les <strong>details fins</strong>.
-                        Un piano et une guitare jouant la meme note auront des MFCC differents &mdash; c'est ce qui permet de les distinguer.
+                        Les MFCC representent la <strong>forme spectrale</strong> du son,
+                        filtree comme le fait l'oreille humaine. Chaque ligne horizontale
+                        est un coefficient : les premiers (en bas) captent le
+                        <strong>timbre general</strong>, les derniers (en haut) captent
+                        les <strong>details fins</strong>. Un piano et une guitare jouant
+                        la meme note auront des MFCC differents &mdash; c'est ce qui
+                        permet de les distinguer.
                     </div>
-                    <img class="viz-image" id="mfccImg" src="" alt="MFCC Heatmap">
+                    <img class="viz-image" id="mfccImg" src="" alt="MFCC Heatmap" />
 
-                    <div class="viz-label">Chroma &mdash; Distribution des 12 notes musicales</div>
-                    <div class="explain" style="margin-top:8px;">
+                    <div class="viz-label">
+                        Chroma &mdash; Distribution des 12 notes musicales
+                    </div>
+                    <div class="explain" style="margin-top: 8px">
                         <div class="explain-title">Qu'est-ce que le Chroma ?</div>
-                        Le chromagramme montre l'<strong>energie de chaque note</strong> (Do, Re, Mi...) au fil du temps.
-                        A gauche : l'evolution temporelle. A droite : la moyenne par note.
-                        Le <strong>jazz</strong> utilise beaucoup de notes differentes (accords complexes), tandis que le <strong>pop</strong> a souvent 3-4 notes dominantes.
+                        Le chromagramme montre l'<strong>energie de chaque note</strong>
+                        (Do, Re, Mi...) au fil du temps. A gauche : l'evolution
+                        temporelle. A droite : la moyenne par note. Le
+                        <strong>jazz</strong> utilise beaucoup de notes differentes
+                        (accords complexes), tandis que le <strong>pop</strong> a souvent
+                        3-4 notes dominantes.
                     </div>
-                    <img class="viz-image" id="chromaImg" src="" alt="Chroma Chart">
+                    <img class="viz-image" id="chromaImg" src="" alt="Chroma Chart" />
 
-                    <div class="viz-label">Feature Importance &mdash; Quelles features comptent le plus ?</div>
-                    <div class="explain" style="margin-top:8px;">
-                        <div class="explain-title">Comment savoir quelles features sont utiles ?</div>
-                        Le <strong>Random Forest</strong> mesure combien chaque feature contribue a separer les genres.
-                        Les features en haut du classement sont celles qui <strong>differencient le mieux</strong> les 10 genres musicaux.
-                        Si un MFCC ou le spectral centroid apparait en premier, cela signifie que cette mesure est la plus discriminante.
+                    <div class="viz-label">
+                        Feature Importance &mdash; Quelles features comptent le plus ?
                     </div>
-                    <img class="viz-image" id="importanceImg" src="" alt="Feature Importance" style="display:none;">
+                    <div class="explain" style="margin-top: 8px">
+                        <div class="explain-title">
+                            Comment savoir quelles features sont utiles ?
+                        </div>
+                        Le <strong>Random Forest</strong> mesure combien chaque feature
+                        contribue a separer les genres. Les features en haut du classement
+                        sont celles qui <strong>differencient le mieux</strong> les 10
+                        genres musicaux. Si un MFCC ou le spectral centroid apparait en
+                        premier, cela signifie que cette mesure est la plus discriminante.
+                    </div>
+                    <img class="viz-image" id="importanceImg" src="" alt="Feature Importance" style="display: none" />
                 </div>
             </div>
         </div>
@@ -547,17 +933,25 @@
                     <div class="step-number">4</div>
                     <div>
                         <div class="step-title">Normalisation (StandardScaler)</div>
-                        <div class="step-desc">Mise a la meme echelle que les donnees d'entrainement</div>
+                        <div class="step-desc">
+                            Mise a la meme echelle que les donnees d'entrainement
+                        </div>
                     </div>
                 </div>
                 <div class="step-body">
                     <div class="explain">
                         <div class="explain-title">Pourquoi normaliser ?</div>
-                        Les features ont des echelles tres differentes : le <strong>tempo</strong> vaut ~120, mais le <strong>MFCC</strong> vaut ~-200.
-                        Le modele SVM calcule des <strong>distances</strong> entre les points. Sans normalisation, le tempo (grande valeur) dominerait les MFCC (petite valeur), meme si les MFCC sont plus importants.
-                        <br><br>
-                        On utilise la formule ci-dessous pour ramener chaque feature a une <strong>moyenne de 0</strong> et un <strong>ecart-type de 1</strong>.
-                        Le <strong>mean</strong> et <strong>std</strong> viennent des 1000 fichiers d'entrainement &mdash; on applique le meme calcul ici.
+                        Les features ont des echelles tres differentes : le
+                        <strong>tempo</strong> vaut ~120, mais le
+                        <strong>MFCC</strong> vaut ~-200. Le modele SVM calcule des
+                        <strong>distances</strong> entre les points. Sans normalisation,
+                        le tempo (grande valeur) dominerait les MFCC (petite valeur), meme
+                        si les MFCC sont plus importants. <br /><br />
+                        On utilise la formule ci-dessous pour ramener chaque feature a une
+                        <strong>moyenne de 0</strong> et un
+                        <strong>ecart-type de 1</strong>. Le <strong>mean</strong> et
+                        <strong>std</strong> viennent des 1000 fichiers d'entrainement
+                        &mdash; on applique le meme calcul ici.
                     </div>
 
                     <div class="norm-formula">
@@ -575,7 +969,11 @@
 
                     <div class="norm-card" id="normCard"></div>
 
-                    <div class="norm-note">* Le meme scaler (mean et std appris sur les 1000 fichiers d'entrainement) est applique a ces <span id="normTotal">0</span> features</div>
+                    <div class="norm-note">
+                        * Le meme scaler (mean et std appris sur les 1000 fichiers
+                        d'entrainement) est applique a ces
+                        <span id="normTotal">0</span> features
+                    </div>
                 </div>
             </div>
         </div>
@@ -588,19 +986,27 @@
                 <div class="step-header">
                     <div class="step-number">5</div>
                     <div>
-                        <div class="step-title">Prediction SVM (Support Vector Machine)</div>
-                        <div class="step-desc">model.predict() + predict_proba() &mdash; Classification finale</div>
+                        <div class="step-title">
+                            Prediction SVM (Support Vector Machine)
+                        </div>
+                        <div class="step-desc">
+                            model.predict() + predict_proba() &mdash; Classification finale
+                        </div>
                     </div>
                 </div>
                 <div class="step-body">
                     <div class="explain">
                         <div class="explain-title">Comment le SVM decide ?</div>
-                        Pendant l'entrainement, le SVM a vu les <span id="explainTotal">102</span> features de <strong>700 chansons</strong> avec leur genre connu.
-                        Il a appris a tracer des <strong>frontieres</strong> (hyperplans) dans l'espace a <span id="explainTotal2">102</span> dimensions qui separent au mieux les 10 genres.
-                        <br><br>
-                        Maintenant, il place votre chanson dans cet espace et regarde <strong>de quel cote de chaque frontiere elle tombe</strong>.
-                        Il calcule aussi la <strong>distance</strong> aux frontieres pour estimer les probabilites.
-                        <br><br>
+                        Pendant l'entrainement, le SVM a vu les
+                        <span id="explainTotal">102</span> features de
+                        <strong>700 chansons</strong> avec leur genre connu. Il a appris a
+                        tracer des <strong>frontieres</strong> (hyperplans) dans l'espace
+                        a <span id="explainTotal2">102</span> dimensions qui separent au
+                        mieux les 10 genres. <br /><br />
+                        Maintenant, il place votre chanson dans cet espace et regarde
+                        <strong>de quel cote de chaque frontiere elle tombe</strong>. Il
+                        calcule aussi la <strong>distance</strong> aux frontieres pour
+                        estimer les probabilites. <br /><br />
                         <span id="explainResult"></span>
                     </div>
 
@@ -610,16 +1016,22 @@
                     </div>
                     <div id="probBars"></div>
 
-                    <div class="viz-label">PCA &mdash; Ou se situe votre chanson parmi les 1000 chansons d'entrainement ?</div>
-                    <div class="explain" style="margin-top:8px;">
-                        <div class="explain-title">Qu'est-ce que le PCA ?</div>
-                        Les <span id="pcaTotal">102</span> features sont trop nombreuses pour etre visualisees.
-                        Le <strong>PCA (Analyse en Composantes Principales)</strong> compresse ces dimensions en <strong>2 axes</strong> tout en conservant un maximum d'information.
-                        <br><br>
-                        Chaque point colore = une chanson d'entrainement. L'etoile = <strong>votre chanson</strong>.
-                        Si elle tombe dans un cluster de couleur, c'est coherent avec la prediction.
+                    <div class="viz-label">
+                        PCA &mdash; Ou se situe votre chanson parmi les 1000 chansons
+                        d'entrainement ?
                     </div>
-                    <img class="viz-image" id="pcaImg" src="" alt="PCA Plot" style="display:none;">
+                    <div class="explain" style="margin-top: 8px">
+                        <div class="explain-title">Qu'est-ce que le PCA ?</div>
+                        Les <span id="pcaTotal">102</span> features sont trop nombreuses
+                        pour etre visualisees. Le
+                        <strong>PCA (Analyse en Composantes Principales)</strong>
+                        compresse ces dimensions en <strong>2 axes</strong> tout en
+                        conservant un maximum d'information. <br /><br />
+                        Chaque point colore = une chanson d'entrainement. L'etoile =
+                        <strong>votre chanson</strong>. Si elle tombe dans un cluster de
+                        couleur, c'est coherent avec la prediction.
+                    </div>
+                    <img class="viz-image" id="pcaImg" src="" alt="PCA Plot" style="display: none" />
                 </div>
             </div>
         </div>
@@ -633,24 +1045,30 @@
                     <div class="step-number">6</div>
                     <div>
                         <div class="step-title">Comparaison des modeles</div>
-                        <div class="step-desc">6 algorithmes &mdash; Vote majoritaire pour valider la prediction</div>
+                        <div class="step-desc">
+                            6 algorithmes &mdash; Vote majoritaire pour valider la
+                            prediction
+                        </div>
                     </div>
                 </div>
                 <div class="step-body">
                     <div class="explain">
-                        <div class="explain-title">Pourquoi comparer plusieurs modeles ?</div>
-                        Chaque algorithme a sa propre <strong>strategie de decision</strong> :
-                        le <strong>KNN</strong> cherche les voisins les plus proches,
-                        le <strong>SVM</strong> trace des frontieres,
-                        le <strong>Random Forest</strong> fait voter des arbres de decision,
-                        le <strong>MLP</strong> imite des neurones, etc.
-                        <br><br>
-                        Si <strong>plusieurs modeles differents</strong> arrivent au meme resultat, on peut etre plus confiant dans la prediction.
-                        C'est le principe du <strong>vote majoritaire (consensus)</strong>.
+                        <div class="explain-title">
+                            Pourquoi comparer plusieurs modeles ?
+                        </div>
+                        Chaque algorithme a sa propre
+                        <strong>strategie de decision</strong> : le
+                        <strong>KNN</strong> cherche les voisins les plus proches, le
+                        <strong>SVM</strong> trace des frontieres, le
+                        <strong>Random Forest</strong> fait voter des arbres de decision,
+                        le <strong>MLP</strong> imite des neurones, etc. <br /><br />
+                        Si <strong>plusieurs modeles differents</strong> arrivent au meme
+                        resultat, on peut etre plus confiant dans la prediction. C'est le
+                        principe du <strong>vote majoritaire (consensus)</strong>.
                     </div>
 
                     <div class="viz-label">Confiance de chaque modele</div>
-                    <img class="viz-image" id="comparisonImg" src="" alt="Model Comparison">
+                    <img class="viz-image" id="comparisonImg" src="" alt="Model Comparison" />
 
                     <table class="model-table" id="modelTable">
                         <thead>
@@ -670,16 +1088,24 @@
                         <div class="consensus-detail" id="consensusDetail"></div>
                     </div>
 
-                    <div class="viz-label">Matrice de Confusion &mdash; Quels genres le SVM confond-il ?</div>
-                    <div class="explain" style="margin-top:8px;">
-                        <div class="explain-title">Comment lire la matrice de confusion ?</div>
-                        Cette matrice montre les resultats d'une <strong>cross-validation 5-fold</strong> sur les 1000 chansons d'entrainement.
-                        Chaque ligne = le <strong>genre reel</strong>, chaque colonne = le <strong>genre predit</strong>.
-                        Les nombres sur la diagonale = predictions correctes. Les nombres hors diagonale = erreurs.
-                        <br><br>
-                        Par exemple, si la case (rock, country) est elevee, le modele confond souvent rock et country &mdash; ce qui est logique car ces genres se ressemblent.
+                    <div class="viz-label">
+                        Matrice de Confusion &mdash; Quels genres le SVM confond-il ?
                     </div>
-                    <img class="viz-image" id="confusionImg" src="" alt="Confusion Matrix" style="display:none;">
+                    <div class="explain" style="margin-top: 8px">
+                        <div class="explain-title">
+                            Comment lire la matrice de confusion ?
+                        </div>
+                        Cette matrice montre les resultats d'une
+                        <strong>cross-validation 5-fold</strong> sur les 1000 chansons
+                        d'entrainement. Chaque ligne = le <strong>genre reel</strong>,
+                        chaque colonne = le <strong>genre predit</strong>. Les nombres sur
+                        la diagonale = predictions correctes. Les nombres hors diagonale =
+                        erreurs. <br /><br />
+                        Par exemple, si la case (rock, country) est elevee, le modele
+                        confond souvent rock et country &mdash; ce qui est logique car ces
+                        genres se ressemblent.
+                    </div>
+                    <img class="viz-image" id="confusionImg" src="" alt="Confusion Matrix" style="display: none" />
                 </div>
             </div>
         </div>
@@ -687,99 +1113,118 @@
         <button class="reset-btn" id="resetBtn">Essayer un autre fichier</button>
     </div>
 
-    <div class="footer">Music Genre Classification &mdash; Machine Learning Pipeline</div>
+    <div class="footer">
+        Music Genre Classification &mdash; Machine Learning Pipeline
+    </div>
 
-<script>
-    const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const predictBtn = document.getElementById('predictBtn');
-    const errorMsg = document.getElementById('errorMsg');
-    const pipeline = document.getElementById('pipeline');
-    let selectedFile = null;
+    <script>
+        const uploadArea = document.getElementById("uploadArea");
+        const fileInput = document.getElementById("fileInput");
+        const predictBtn = document.getElementById("predictBtn");
+        const errorMsg = document.getElementById("errorMsg");
+        const pipeline = document.getElementById("pipeline");
+        let selectedFile = null;
 
-    uploadArea.addEventListener('click', () => fileInput.click());
-    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault(); uploadArea.classList.remove('dragover');
-        if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
-    });
-    fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
-
-    function handleFile(file) {
-        selectedFile = file;
-        document.getElementById('fileName').textContent = file.name;
-        predictBtn.disabled = false;
-        errorMsg.style.display = 'none';
-        pipeline.classList.remove('active');
-        resetSteps();
-    }
-
-    function resetSteps() {
-        for (let i = 1; i <= 6; i++) document.getElementById('step' + i).classList.remove('visible');
-        for (let i = 1; i <= 5; i++) document.getElementById('conn' + i).classList.remove('visible');
-    }
-
-    function showStep(id, delay) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                document.getElementById(id).classList.add('visible');
-                document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'center' });
-                resolve();
-            }, delay);
+        uploadArea.addEventListener("click", () => fileInput.click());
+        uploadArea.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            uploadArea.classList.add("dragover");
         });
-    }
+        uploadArea.addEventListener("dragleave", () =>
+            uploadArea.classList.remove("dragover"),
+        );
+        uploadArea.addEventListener("drop", (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove("dragover");
+            if (e.dataTransfer.files.length > 0)
+                handleFile(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
 
-    // Predict
-    predictBtn.addEventListener('click', async () => {
-        if (!selectedFile) return;
-        predictBtn.disabled = true;
-        predictBtn.classList.add('btn-loading');
-        predictBtn.textContent = 'Analyse en cours...';
-        errorMsg.style.display = 'none';
-        pipeline.classList.remove('active');
-        resetSteps();
+        function handleFile(file) {
+            selectedFile = file;
+            document.getElementById("fileName").textContent = file.name;
+            predictBtn.disabled = false;
+            errorMsg.style.display = "none";
+            pipeline.classList.remove("active");
+            resetSteps();
+        }
 
-        const formData = new FormData();
-        formData.append('file', selectedFile);
+        function resetSteps() {
+            for (let i = 1; i <= 6; i++)
+                document.getElementById("step" + i).classList.remove("visible");
+            for (let i = 1; i <= 5; i++)
+                document.getElementById("conn" + i).classList.remove("visible");
+        }
 
-        try {
-            const response = await fetch('/predict', { method: 'POST', body: formData });
-            const data = await response.json();
-            predictBtn.classList.remove('btn-loading');
-            predictBtn.textContent = 'Lancer la classification';
+        function showStep(id, delay) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    document.getElementById(id).classList.add("visible");
+                    document
+                        .getElementById(id)
+                        .scrollIntoView({ behavior: "smooth", block: "center" });
+                    resolve();
+                }, delay);
+            });
+        }
 
-            if (data.error) {
-                errorMsg.textContent = data.error;
-                errorMsg.style.display = 'block';
-                predictBtn.disabled = false;
-                return;
+        // Predict
+        predictBtn.addEventListener("click", async () => {
+            if (!selectedFile) return;
+            predictBtn.disabled = true;
+            predictBtn.classList.add("btn-loading");
+            predictBtn.textContent = "Analyse en cours...";
+            errorMsg.style.display = "none";
+            pipeline.classList.remove("active");
+            resetSteps();
+
+            const formData = new FormData();
+            formData.append("file", selectedFile);
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    body: formData,
+                });
+                const data = await response.json();
+                predictBtn.classList.remove("btn-loading");
+                predictBtn.textContent = "Lancer la classification";
+
+                if (data.error) {
+                    errorMsg.textContent = data.error;
+                    errorMsg.style.display = "block";
+                    predictBtn.disabled = false;
+                    return;
+                }
+
+                pipeline.classList.add("active");
+                await animatePipeline(data);
+            } catch (err) {
+                predictBtn.classList.remove("btn-loading");
+                predictBtn.textContent = "Lancer la classification";
+                errorMsg.textContent = "Erreur de connexion au serveur";
+                errorMsg.style.display = "block";
+            }
+            predictBtn.disabled = false;
+        });
+
+        async function animatePipeline(data) {
+            const p = data.pipeline;
+
+            // ====== STEP 1 ======
+            // Audio playback
+            if (data.audio_base64) {
+                const audioEl = document.getElementById("audioElement");
+                audioEl.src =
+                    "data:" + data.audio_mime + ";base64," + data.audio_base64;
+                document.getElementById("audioPlayer").style.display = "block";
             }
 
-            pipeline.classList.add('active');
-            await animatePipeline(data);
-        } catch (err) {
-            predictBtn.classList.remove('btn-loading');
-            predictBtn.textContent = 'Lancer la classification';
-            errorMsg.textContent = 'Erreur de connexion au serveur';
-            errorMsg.style.display = 'block';
-        }
-        predictBtn.disabled = false;
-    });
-
-    async function animatePipeline(data) {
-        const p = data.pipeline;
-
-        // ====== STEP 1 ======
-        // Audio playback
-        if (data.audio_base64) {
-            const audioEl = document.getElementById('audioElement');
-            audioEl.src = 'data:' + data.audio_mime + ';base64,' + data.audio_base64;
-            document.getElementById('audioPlayer').style.display = 'block';
-        }
-
-        const a = p.step1_audio;
-        document.getElementById('audioStats').innerHTML = `
+            const a = p.step1_audio;
+            document.getElementById("audioStats").innerHTML = `
             <div class="stat-box">
                 <div class="stat-value">${a.duration}s</div>
                 <div class="stat-label">Duree analysee</div>
@@ -793,84 +1238,92 @@
                 <div class="stat-label">Echantillons total</div>
             </div>`;
 
-        // Raw samples display
-        let samplesHTML = '<div class="label">Ce que le PC voit (20 premiers echantillons sur ' + a.total_samples.toLocaleString() + ') :</div>\n';
-        samplesHTML += '<br>y = [ ';
-        a.raw_samples.forEach((val, i) => {
-            const timeMs = ((i / a.sample_rate) * 1000).toFixed(3);
-            samplesHTML += `<span class="index">${val >= 0 ? '+' : ''}${val.toFixed(4)}</span>`;
-            if (i < a.raw_samples.length - 1) samplesHTML += ', ';
-        });
-        samplesHTML += ', ... ]';
-        samplesHTML += `<br><br><span class="label">Plage des valeurs : </span>`;
-        samplesHTML += `<span class="index">min = ${a.min_value}</span> &nbsp; <span class="index">max = ${a.max_value}</span>`;
-        samplesHTML += `<br><span class="label">Chaque nombre = pression de l'air a un instant (1/${a.sample_rate} seconde)</span>`;
-        document.getElementById('rawSamples').innerHTML = samplesHTML;
+            // Raw samples display
+            let samplesHTML =
+                '<div class="label">Ce que le PC voit (20 premiers echantillons sur ' +
+                a.total_samples.toLocaleString() +
+                ") :</div>\n";
+            samplesHTML += "<br>y = [ ";
+            a.raw_samples.forEach((val, i) => {
+                const timeMs = ((i / a.sample_rate) * 1000).toFixed(3);
+                samplesHTML += `<span class="index">${val >= 0 ? "+" : ""}${val.toFixed(4)}</span>`;
+                if (i < a.raw_samples.length - 1) samplesHTML += ", ";
+            });
+            samplesHTML += ", ... ]";
+            samplesHTML += `<br><br><span class="label">Plage des valeurs : </span>`;
+            samplesHTML += `<span class="index">min = ${a.min_value}</span> &nbsp; <span class="index">max = ${a.max_value}</span>`;
+            samplesHTML += `<br><span class="label">Chaque nombre = pression de l'air a un instant (1/${a.sample_rate} seconde)</span>`;
+            document.getElementById("rawSamples").innerHTML = samplesHTML;
 
-        await showStep('step1', 400);
-        await showStep('conn1', 600);
+            await showStep("step1", 400);
+            await showStep("conn1", 600);
 
-        // ====== STEP 2 ======
-        document.getElementById('waveformImg').src = 'data:image/png;base64,' + p.step2_waveform;
-        document.getElementById('spectrogramImg').src = 'data:image/png;base64,' + p.step2_spectrogram;
-        if (p.step2_centroid) {
-            document.getElementById('centroidImg').src = 'data:image/png;base64,' + p.step2_centroid;
-        }
+            // ====== STEP 2 ======
+            document.getElementById("waveformImg").src =
+                "data:image/png;base64," + p.step2_waveform;
+            document.getElementById("spectrogramImg").src =
+                "data:image/png;base64," + p.step2_spectrogram;
+            if (p.step2_centroid) {
+                document.getElementById("centroidImg").src =
+                    "data:image/png;base64," + p.step2_centroid;
+            }
 
-        await showStep('step2', 700);
-        await showStep('conn2', 600);
+            await showStep("step2", 700);
+            await showStep("conn2", 600);
 
-        // ====== STEP 3 ======
-        document.getElementById('totalFeatures').textContent = p.step3_total;
+            // ====== STEP 3 ======
+            document.getElementById("totalFeatures").textContent = p.step3_total;
 
-        const groupHints = {
-            'MFCC': 'Forme spectrale du son (comment l\'oreille le percoit)',
-            'Spectral': 'Brillance, largeur, contraste du spectre',
-            'Chroma': 'Distribution dans les 12 notes (Do, Re, Mi...)',
-            'Energy & Rhythm': 'Volume, tempo (BPM), mel-spectrogramme'
-        };
+            const groupHints = {
+                MFCC: "Forme spectrale du son (comment l'oreille le percoit)",
+                Spectral: "Brillance, largeur, contraste du spectre",
+                Chroma: "Distribution dans les 12 notes (Do, Re, Mi...)",
+                "Energy & Rhythm": "Volume, tempo (BPM), mel-spectrogramme",
+            };
 
-        let groupsHTML = '';
-        for (const [group, count] of Object.entries(p.step3_counts)) {
-            groupsHTML += `<div class="feat-group">
+            let groupsHTML = "";
+            for (const [group, count] of Object.entries(p.step3_counts)) {
+                groupsHTML += `<div class="feat-group">
                 <div class="count">${count}</div>
                 <div class="name">${group}</div>
-                <div class="hint">${groupHints[group] || ''}</div>
+                <div class="hint">${groupHints[group] || ""}</div>
             </div>`;
-        }
-        document.getElementById('featureGroups').innerHTML = groupsHTML;
-
-        let detailHTML = '';
-        for (const [group, feats] of Object.entries(p.step3_features)) {
-            detailHTML += `<div style="color:#7c4dff;font-weight:600;font-size:0.82rem;margin:12px 0 6px;">${group}</div>`;
-            for (const [name, val] of Object.entries(feats)) {
-                detailHTML += `<div class="feat-row"><span class="fname">${name}</span><span class="fval">${val}</span></div>`;
             }
-        }
-        document.getElementById('featureDetail').innerHTML = detailHTML;
+            document.getElementById("featureGroups").innerHTML = groupsHTML;
 
-        // MFCC and Chroma images
-        if (p.step3_mfcc_img) {
-            document.getElementById('mfccImg').src = 'data:image/png;base64,' + p.step3_mfcc_img;
-        }
-        if (p.step3_chroma_img) {
-            document.getElementById('chromaImg').src = 'data:image/png;base64,' + p.step3_chroma_img;
-        }
-        if (p.step3_importance_img) {
-            const impImg = document.getElementById('importanceImg');
-            impImg.src = 'data:image/png;base64,' + p.step3_importance_img;
-            impImg.style.display = 'block';
-        }
+            let detailHTML = "";
+            for (const [group, feats] of Object.entries(p.step3_features)) {
+                detailHTML += `<div style="color:#7c4dff;font-weight:600;font-size:0.82rem;margin:12px 0 6px;">${group}</div>`;
+                for (const [name, val] of Object.entries(feats)) {
+                    detailHTML += `<div class="feat-row"><span class="fname">${name}</span><span class="fval">${val}</span></div>`;
+                }
+            }
+            document.getElementById("featureDetail").innerHTML = detailHTML;
 
-        await showStep('step3', 700);
-        await showStep('conn3', 600);
+            // MFCC and Chroma images
+            if (p.step3_mfcc_img) {
+                document.getElementById("mfccImg").src =
+                    "data:image/png;base64," + p.step3_mfcc_img;
+            }
+            if (p.step3_chroma_img) {
+                document.getElementById("chromaImg").src =
+                    "data:image/png;base64," + p.step3_chroma_img;
+            }
+            if (p.step3_importance_img) {
+                const impImg = document.getElementById("importanceImg");
+                impImg.src = "data:image/png;base64," + p.step3_importance_img;
+                impImg.style.display = "block";
+            }
 
-        // ====== STEP 4 ======
-        document.getElementById('normTotal').textContent = p.step3_total;
+            await showStep("step3", 700);
+            await showStep("conn3", 600);
 
-        let normHTML = '';
-        for (const d of p.step4_norm_details) {
-            normHTML += `<div class="norm-row">
+            // ====== STEP 4 ======
+            document.getElementById("normTotal").textContent = p.step3_total;
+
+            let normHTML = "";
+            for (const d of p.step4_norm_details) {
+                normHTML += `<div class="norm-row">
                 <span class="n-name">${d.name}</span>
                 <span class="n-raw">${d.raw}</span>
                 <span class="n-op">&minus;</span>
@@ -878,117 +1331,132 @@
                 <span class="n-op">&divide;</span>
                 <span class="n-scaled">${d.scaled}</span>
             </div>`;
-        }
-        normHTML += `<div class="norm-row">
+            }
+            normHTML += `<div class="norm-row">
             <span class="n-name" style="color:#555;">... et ${p.step3_total - p.step4_norm_details.length} autres features</span>
             <span></span><span></span><span></span><span></span><span></span>
         </div>`;
-        document.getElementById('normCard').innerHTML = normHTML;
+            document.getElementById("normCard").innerHTML = normHTML;
 
-        await showStep('step4', 700);
-        await showStep('conn4', 600);
+            await showStep("step4", 700);
+            await showStep("conn4", 600);
 
-        // ====== STEP 5 ======
-        document.getElementById('explainTotal').textContent = p.step3_total;
-        document.getElementById('explainTotal2').textContent = p.step3_total;
-        document.getElementById('pcaTotal').textContent = p.step3_total;
-        document.getElementById('explainResult').innerHTML =
-            `Resultat : votre chanson est <strong>plus proche de la zone "${data.top1.genre}"</strong> (${data.top1.probability}%) `
-            + `que de la zone "${data.top2.genre}" (${data.top2.probability}%). Le SVM a donc decide : <strong>${data.genre.toUpperCase()}</strong>.`;
+            // ====== STEP 5 ======
+            document.getElementById("explainTotal").textContent = p.step3_total;
+            document.getElementById("explainTotal2").textContent = p.step3_total;
+            document.getElementById("pcaTotal").textContent = p.step3_total;
+            document.getElementById("explainResult").innerHTML =
+                `Resultat : votre chanson est <strong>plus proche de la zone "${data.top1.genre}"</strong> (${data.top1.probability}%) ` +
+                `que de la zone "${data.top2.genre}" (${data.top2.probability}%). Le SVM a donc decide : <strong>${data.genre.toUpperCase()}</strong>.`;
 
-        document.getElementById('predictedGenre').textContent = data.genre;
-        document.getElementById('confidenceText').textContent = `Confiance: ${data.confidence}%`;
+            document.getElementById("predictedGenre").textContent = data.genre;
+            document.getElementById("confidenceText").textContent =
+                `Confiance: ${data.confidence}%`;
 
-        let probHTML = '';
-        data.probabilities.forEach((item, i) => {
-            probHTML += `<div class="prob-item">
+            let probHTML = "";
+            data.probabilities.forEach((item, i) => {
+                probHTML += `<div class="prob-item">
                 <span class="prob-label">${item.genre}</span>
                 <div class="prob-bar-bg">
-                    <div class="prob-bar ${i === 0 ? 'top' : ''}" style="width: 0%;" data-width="${item.probability}"></div>
+                    <div class="prob-bar ${i === 0 ? "top" : ""}" style="width: 0%;" data-width="${item.probability}"></div>
                 </div>
                 <span class="prob-value">${item.probability}%</span>
             </div>`;
-        });
-        document.getElementById('probBars').innerHTML = probHTML;
-
-        // PCA plot
-        if (p.step5_pca_img) {
-            const pcaImg = document.getElementById('pcaImg');
-            pcaImg.src = 'data:image/png;base64,' + p.step5_pca_img;
-            pcaImg.style.display = 'block';
-        }
-
-        await showStep('step5', 700);
-
-        setTimeout(() => {
-            document.querySelectorAll('.prob-bar').forEach(bar => {
-                bar.style.width = bar.dataset.width + '%';
             });
-        }, 100);
+            document.getElementById("probBars").innerHTML = probHTML;
 
-        // ====== STEP 6: Model Comparison ======
-        if (p.step6_models && p.step6_models.length > 0) {
-            await showStep('conn5', 600);
-
-            // Comparison chart
-            if (p.step6_comparison_img) {
-                document.getElementById('comparisonImg').src = 'data:image/png;base64,' + p.step6_comparison_img;
+            // PCA plot
+            if (p.step5_pca_img) {
+                const pcaImg = document.getElementById("pcaImg");
+                pcaImg.src = "data:image/png;base64," + p.step5_pca_img;
+                pcaImg.style.display = "block";
             }
 
-            // Model table
-            let tableHTML = '';
-            p.step6_models.forEach(m => {
-                tableHTML += `<tr>
+            await showStep("step5", 700);
+
+            setTimeout(() => {
+                document.querySelectorAll(".prob-bar").forEach((bar) => {
+                    bar.style.width = bar.dataset.width + "%";
+                });
+            }, 100);
+
+            // ====== STEP 6: Model Comparison ======
+            if (p.step6_models && p.step6_models.length > 0) {
+                await showStep("conn5", 600);
+
+                // Comparison chart
+                if (p.step6_comparison_img) {
+                    document.getElementById("comparisonImg").src =
+                        "data:image/png;base64," + p.step6_comparison_img;
+                }
+
+                // Model table
+                let tableHTML = "";
+                p.step6_models.forEach((m) => {
+                    tableHTML += `<tr>
                     <td class="m-name">${m.name}</td>
                     <td class="m-genre">${m.genre}</td>
                     <td class="m-conf">${m.confidence}%</td>
                     <td class="m-acc">${m.train_accuracy}%</td>
                 </tr>`;
-            });
-            document.getElementById('modelTableBody').innerHTML = tableHTML;
+                });
+                document.getElementById("modelTableBody").innerHTML = tableHTML;
 
-            // Consensus
-            document.getElementById('consensusGenre').textContent = p.step6_consensus;
-            document.getElementById('consensusDetail').textContent =
-                p.step6_consensus_count + ' modeles sur ' + p.step6_total_models + ' sont d\'accord';
+                // Consensus
+                document.getElementById("consensusGenre").textContent =
+                    p.step6_consensus;
+                document.getElementById("consensusDetail").textContent =
+                    p.step6_consensus_count +
+                    " modeles sur " +
+                    p.step6_total_models +
+                    " sont d'accord";
 
-            // Confusion matrix
-            if (p.step6_confusion_img) {
-                const confImg = document.getElementById('confusionImg');
-                confImg.src = 'data:image/png;base64,' + p.step6_confusion_img;
-                confImg.style.display = 'block';
+                // Confusion matrix
+                if (p.step6_confusion_img) {
+                    const confImg = document.getElementById("confusionImg");
+                    confImg.src = "data:image/png;base64," + p.step6_confusion_img;
+                    confImg.style.display = "block";
+                }
+
+                await showStep("step6", 700);
             }
-
-            await showStep('step6', 700);
         }
-    }
 
-    // Toggle features
-    document.getElementById('toggleFeatures').addEventListener('click', () => {
-        const detail = document.getElementById('featureDetail');
-        const btn = document.getElementById('toggleFeatures');
-        detail.classList.toggle('open');
-        btn.textContent = detail.classList.contains('open') ? 'Masquer les valeurs' : 'Voir toutes les valeurs extraites';
-    });
+        // Toggle features
+        document
+            .getElementById("toggleFeatures")
+            .addEventListener("click", () => {
+                const detail = document.getElementById("featureDetail");
+                const btn = document.getElementById("toggleFeatures");
+                detail.classList.toggle("open");
+                btn.textContent = detail.classList.contains("open")
+                    ? "Masquer les valeurs"
+                    : "Voir toutes les valeurs extraites";
+            });
 
-    // Reset
-    document.getElementById('resetBtn').addEventListener('click', () => {
-        selectedFile = null; fileInput.value = '';
-        document.getElementById('fileName').textContent = '';
-        predictBtn.disabled = true;
-        pipeline.classList.remove('active');
-        resetSteps(); errorMsg.style.display = 'none';
-        // Reset audio player
-        document.getElementById('audioPlayer').style.display = 'none';
-        document.getElementById('audioElement').src = '';
-        // Reset dynamic images
-        ['importanceImg', 'pcaImg', 'confusionImg'].forEach(id => {
-            const el = document.getElementById(id);
-            el.style.display = 'none'; el.src = '';
+        // Reset
+        document.getElementById("resetBtn").addEventListener("click", () => {
+            selectedFile = null;
+            fileInput.value = "";
+            document.getElementById("fileName").textContent = "";
+            predictBtn.disabled = true;
+            pipeline.classList.remove("active");
+            resetSteps();
+            errorMsg.style.display = "none";
+            // Reset audio player
+            document.getElementById("audioPlayer").style.display = "none";
+            document.getElementById("audioElement").src = "";
+            // Reset dynamic images
+            ["importanceImg", "pcaImg", "confusionImg"].forEach((id) => {
+                const el = document.getElementById(id);
+                el.style.display = "none";
+                el.src = "";
+            });
+            document
+                .getElementById("uploadContainer")
+                .scrollIntoView({ behavior: "smooth" });
         });
-        document.getElementById('uploadContainer').scrollIntoView({ behavior: 'smooth' });
-    });
-</script>
-
+    </script>
 </body>
+
 </html>

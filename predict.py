@@ -59,9 +59,9 @@ def predict_genre(audio_path: str, model_path: str = None):
     print(f"Modele  : {model_path.name}")
 
     save_dict = joblib.load(model_path)
-    model = save_dict['model']
-    scaler = save_dict['scaler']
-    label_encoder = save_dict['label_encoder']
+    model = save_dict["model"]
+    scaler = save_dict["scaler"]
+    label_encoder = save_dict["label_encoder"]
 
     # 2. Extraire les features du fichier audio
     print("\nExtraction des caracteristiques audio...")
@@ -70,7 +70,9 @@ def predict_genre(audio_path: str, model_path: str = None):
 
     if features is None:
         print("Erreur: Impossible d'extraire les caracteristiques audio.")
-        print("Verifiez que le fichier est un format audio valide (.wav, .mp3, .ogg, .flac)")
+        print(
+            "Verifiez que le fichier est un format audio valide (.wav, .mp3, .ogg, .flac)"
+        )
         sys.exit(1)
 
     # 3. Preparer les features pour la prediction
@@ -112,26 +114,24 @@ if __name__ == "__main__":
         description="Predire le genre musical d'un fichier audio",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Exemples:
-    python predict.py ma_chanson.wav
-    python predict.py "C:/Music/song.mp3"
-    python predict.py song.wav --model models/svm.joblib
+            Exemples:
+                python predict.py ma_chanson.wav
+                python predict.py "C:/Music/song.mp3"
+                python predict.py song.wav --model models/svm.joblib
 
-Formats supportes: .wav, .mp3, .ogg, .flac
-        """
+            Formats supportes: .wav, .mp3, .ogg, .flac
+        """,
     )
 
     parser.add_argument(
-        "audio",
-        type=str,
-        help="Chemin vers le fichier audio a classifier"
+        "audio", type=str, help="Chemin vers le fichier audio a classifier"
     )
 
     parser.add_argument(
         "--model",
         type=str,
         default=None,
-        help="Chemin vers le modele (defaut: models/svm.joblib)"
+        help="Chemin vers le modele (defaut: models/svm.joblib)",
     )
 
     args = parser.parse_args()

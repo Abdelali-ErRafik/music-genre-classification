@@ -28,11 +28,11 @@ __author__ = "Votre Équipe"
 
 __all__ = [
     "Config",
-    "DataLoader", 
+    "DataLoader",
     "FeatureExtractor",
     "Visualizer",
     "ModelTrainer",
     "Evaluator",
     "setup_logging",
-    "timer"
+    "timer",
 ]
